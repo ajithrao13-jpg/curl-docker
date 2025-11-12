@@ -31,8 +31,8 @@ RUN wget -q https://repo1.maven.org/maven2/com/nimbusds/nimbus-jose-jwt/10.0.2/n
     -O /build/lib/nimbus-jose-jwt-10.0.2.jar
 
 # MSSQL JDBC driver
-RUN wget -q https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/12.12.0.jre11/mssql-jdbc-12.12.0.jre11.jar \
-    -O /build/lib/mssql-jdbc-12.12.0.jre11.jar
+RUN wget -q https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/13.2.1.jre11/mssql-jdbc-13.2.1.jre11.jar \
+    -O /build/lib/mssql-jdbc-13.2.1.jre11.jar
 
 # Azure identity and related dependencies for Azure SQL
 RUN wget -q https://repo1.maven.org/maven2/com/azure/azure-identity/1.15.1/azure-identity-1.15.1.jar \
