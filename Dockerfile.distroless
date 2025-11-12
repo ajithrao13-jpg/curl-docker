@@ -1,0 +1,73 @@
+# Minimal Liquibase Docker Image using Distroless Base
+# This approach minimizes OS-level vulnerabilities by using Google's distroless image
+
+# Stage 1: Download Liquibase and dependencies
+FROM maven:3.9-eclipse-temurin-17 AS downloader
+
+WORKDIR /build
+
+# Install wget for downloads
+RUN apt-get update && apt-get install -y --no-install-recommends wget unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download Liquibase 5.0.1 (newer Go version to address stdlib vulnerabilities)
+ARG LIQUIBASE_VERSION=5.0.1
+RUN wget -q https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.tar.gz && \
+    tar -xzf liquibase-${LIQUIBASE_VERSION}.tar.gz -C /build
+
+# Download updated secure dependencies
+RUN mkdir -p /build/lib
+
+# Netty 4.1.125.Final (fixes multiple HIGH CVEs)
+RUN wget -q https://repo1.maven.org/maven2/io/netty/netty-all/4.1.125.Final/netty-all-4.1.125.Final.jar \
+    -O /build/lib/netty-all-4.1.125.Final.jar
+
+# json-smart 2.5.2 (fixes CVE-2024-57699)
+RUN wget -q https://repo1.maven.org/maven2/net/minidev/json-smart/2.5.2/json-smart-2.5.2.jar \
+    -O /build/lib/json-smart-2.5.2.jar
+
+# nimbus-jose-jwt 10.0.2 (fixes CVE-2025-53864)
+RUN wget -q https://repo1.maven.org/maven2/com/nimbusds/nimbus-jose-jwt/10.0.2/nimbus-jose-jwt-10.0.2.jar \
+    -O /build/lib/nimbus-jose-jwt-10.0.2.jar
+
+# MSSQL JDBC driver
+RUN wget -q https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/13.2.1.jre11/mssql-jdbc-13.2.1.jre11.jar \
+    -O /build/lib/mssql-jdbc-13.2.1.jre11.jar
+
+# Azure identity and related dependencies for Azure SQL
+RUN wget -q https://repo1.maven.org/maven2/com/azure/azure-identity/1.15.1/azure-identity-1.15.1.jar \
+    -O /build/lib/azure-identity-1.15.1.jar
+
+# Remove old vulnerable netty, json-smart if present
+RUN find /build -name "netty-*-4.1.110.Final.jar" -delete 2>/dev/null || true
+RUN find /build -name "json-smart-2.5.1.jar" -delete 2>/dev/null || true
+RUN find /build -name "nimbus-jose-jwt-9.*.jar" -delete 2>/dev/null || true
+
+# Stage 2: Build minimal runtime image with distroless
+FROM gcr.io/distroless/java17-debian12:nonroot
+
+# Copy Liquibase from downloader stage
+COPY --from=downloader --chown=nonroot:nonroot /build /liquibase
+
+# Copy updated libraries
+COPY --from=downloader --chown=nonroot:nonroot /build/lib/*.jar /liquibase/lib/
+
+WORKDIR /liquibase
+
+# Set environment variables
+ENV LIQUIBASE_HOME=/liquibase
+ENV PATH="${LIQUIBASE_HOME}:${PATH}"
+
+# Use non-root user (distroless default)
+USER nonroot
+
+# Entrypoint
+ENTRYPOINT ["/liquibase/liquibase"]
+CMD ["--help"]
+
+# Metadata
+LABEL maintainer="your-team@example.com" \
+      description="Liquibase with Azure SQL - Distroless Secure Base" \
+      version="5.0.1-distroless" \
+      base="gcr.io/distroless/java17-debian12" \
+      security.posture="hardened"

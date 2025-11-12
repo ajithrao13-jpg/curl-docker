@@ -1,0 +1,42 @@
+# Scan results
+scan-results/
+*.sarif
+*-scout.md
+*-trivy.json
+*-trivy.txt
+
+# Docker artifacts
+*.tar
+*.tar.gz
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files (should not be committed)
+.env
+.env.local
+*.key
+*.pem
+
+# Temporary files
+/tmp/
+temp/
+*.tmp
+*.bak
+
+# Build artifacts
+target/
+build/
+dist/
+
+# Logs
+*.log
+logs/
+
+# Downloaded JARs (can be re-downloaded)
+*.jar.download
