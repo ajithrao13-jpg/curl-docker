@@ -120,6 +120,9 @@ jobs:
     needs: build-and-scan
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      contents: read
+      pull-requests: write
     
     steps:
       - name: Download all artifacts
@@ -170,6 +173,9 @@ jobs:
     needs: [build-and-scan, compare-results]
     runs-on: ubuntu-latest
     if: failure() && github.event_name == 'schedule'
+    permissions:
+      contents: read
+      issues: write
     
     steps:
       - name: Create issue for failed scan
