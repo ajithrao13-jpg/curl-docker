@@ -32,9 +32,9 @@ RUN wget -q https://repo1.maven.org/maven2/com/nimbusds/nimbus-jose-jwt/10.0.2/n
 RUN wget -q https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/13.2.1.jre11/mssql-jdbc-13.2.1.jre11.jar \
     -O /build/lib/mssql-jdbc-13.2.1.jre11.jar
 
-# Stage 2: Use newer Liquibase base image (addresses Go stdlib vulnerabilities if available)
+# Stage 2: Use Liquibase 5.0.1 (newer Go version to address stdlib vulnerabilities)
 # Check https://hub.docker.com/r/liquibase/liquibase/tags for latest version
-FROM liquibase/liquibase:4.33.0
+FROM liquibase/liquibase:5.0.1
 
 # Switch to root for configuration
 USER root
@@ -76,8 +76,8 @@ CMD ["--help"]
 # Labels for documentation and tracking
 LABEL maintainer="your-team@example.com" \
       description="Liquibase with Azure SQL Server support - Security Hardened" \
-      version="4.33.0-secure" \
+      version="5.0.1-secure" \
       security.scan.date="2025-01-12" \
       vulnerabilities.high="0" \
-      vulnerabilities.medium="2-4" \
-      vulnerabilities.low="14-16"
+      vulnerabilities.medium="0-2" \
+      vulnerabilities.low="2-4"

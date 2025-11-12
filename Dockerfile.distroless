@@ -10,8 +10,8 @@ WORKDIR /build
 RUN apt-get update && apt-get install -y --no-install-recommends wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Download latest Liquibase
-ARG LIQUIBASE_VERSION=4.33.0
+# Download Liquibase 5.0.1 (newer Go version to address stdlib vulnerabilities)
+ARG LIQUIBASE_VERSION=5.0.1
 RUN wget -q https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.tar.gz && \
     tar -xzf liquibase-${LIQUIBASE_VERSION}.tar.gz -C /build
 
@@ -68,6 +68,6 @@ CMD ["--help"]
 # Metadata
 LABEL maintainer="your-team@example.com" \
       description="Liquibase with Azure SQL - Distroless Secure Base" \
-      version="4.33.0-distroless" \
+      version="5.0.1-distroless" \
       base="gcr.io/distroless/java17-debian12" \
       security.posture="hardened"

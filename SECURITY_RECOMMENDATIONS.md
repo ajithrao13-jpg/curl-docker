@@ -92,7 +92,7 @@ Follow the detailed steps in VULNERABILITY_FIXES.md
 #### Use Newer Base Image
 ```dockerfile
 # Instead of liquibase/liquibase:latest
-FROM liquibase/liquibase:4.33.0  # or check for newer
+FROM liquibase/liquibase:5.0.1  # Uses newer Go version
 ```
 
 ### 3. Long-Term Strategies

@@ -117,7 +117,7 @@ Use the provided script for automated building, testing, and scanning:
 ### Base Image Improvements
 
 **Dockerfile.secure:**
-- Uses newer Liquibase base image (4.33.0)
+- Uses Liquibase 5.0.1 base image (newer Go version)
 - Updates all vulnerable Java dependencies
 - Maintains full compatibility
 
