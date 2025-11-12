@@ -92,7 +92,7 @@ Follow the detailed steps in VULNERABILITY_FIXES.md
 #### Use Newer Base Image
 ```dockerfile
 # Instead of liquibase/liquibase:latest
-FROM liquibase/liquibase:4.35.0  # or check for newer
+FROM liquibase/liquibase:4.33.0  # or check for newer
 ```
 
 ### 3. Long-Term Strategies

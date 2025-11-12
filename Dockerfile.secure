@@ -34,7 +34,7 @@ RUN wget -q https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/12
 
 # Stage 2: Use newer Liquibase base image (addresses Go stdlib vulnerabilities if available)
 # Check https://hub.docker.com/r/liquibase/liquibase/tags for latest version
-FROM liquibase/liquibase:4.35.0
+FROM liquibase/liquibase:4.33.0
 
 # Switch to root for configuration
 USER root
@@ -76,7 +76,7 @@ CMD ["--help"]
 # Labels for documentation and tracking
 LABEL maintainer="your-team@example.com" \
       description="Liquibase with Azure SQL Server support - Security Hardened" \
-      version="4.35.0-secure" \
+      version="4.33.0-secure" \
       security.scan.date="2025-01-12" \
       vulnerabilities.high="0" \
       vulnerabilities.medium="2-4" \
