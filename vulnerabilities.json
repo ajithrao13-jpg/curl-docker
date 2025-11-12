@@ -1,0 +1,2688 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Docker Scout",
+          "informationUri": "https://docker.com/products/docker-scout",
+          "name": "docker scout",
+          "rules": [
+            {
+              "id": "CVE-2024-2236",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2024-2236"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2024-2236?s=ubuntu&n=libgcrypt20&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "A timing-based side-channel flaw was found in libgcrypt's RSA implementation. This issue may allow a remote attacker to initiate a Bleichenbacher-style attack, which can lead to the decryption of RSA ciphertexts.\n",
+                "markdown": "> A timing-based side-channel flaw was found in libgcrypt's RSA implementation. This issue may allow a remote attacker to initiate a Bleichenbacher-style attack, which can lead to the decryption of RSA ciphertexts.\n\n|                |                                                                                           |\n|----------------|-------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/libgcrypt20@1.9.4-3ubuntu3?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                       |\n| Fixed version  | not fixed                                                                                 |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3_severity": "LOW",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/libgcrypt20@1.9.4-3ubuntu3?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "3.1",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2024-41996",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2024-41996"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2024-41996?s=ubuntu&n=openssl&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "Validating the order of the public keys in the Diffie-Hellman Key Agreement Protocol, when an approved safe prime is used, allows remote attackers (from the client side) to trigger unnecessarily expensive server-side DHE modular-exponentiation calculations. The client may cause asymmetric resource consumption. The basic attack scenario is that the client must claim that it can only communicate with DHE, and the server must be configured to allow DHE and validate the order of the public key.\n",
+                "markdown": "> Validating the order of the public keys in the Diffie-Hellman Key Agreement Protocol, when an approved safe prime is used, allows remote attackers (from the client side) to trigger unnecessarily expensive server-side DHE modular-exponentiation calculations. The client may cause asymmetric resource consumption. The basic attack scenario is that the client must claim that it can only communicate with DHE, and the server must be configured to allow DHE and validate the order of the public key.\n\n|                |                                                                                          |\n|----------------|------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/openssl@3.0.2-0ubuntu1.20?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                      |\n| Fixed version  | not fixed                                                                                |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3_severity": "LOW",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/openssl@3.0.2-0ubuntu1.20?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "3.1",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2024-56433",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2024-56433"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2024-56433?s=ubuntu&n=shadow&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "shadow-utils (aka shadow) 4.4 through 4.17.0 establishes a default /etc/subuid behavior (e.g., uid 100000 through 165535 for the first user account) that can realistically conflict with the uids of users defined on locally administered networks, potentially leading to account takeover, e.g., by leveraging newuidmap for access to an NFS home directory (or same-host resources in the case of remote logins by these local network users). NOTE: it may also be argued that system administrators should not have assigned uids, within local networks, that are within the range that can occur in /etc/subuid.\n",
+                "markdown": "> shadow-utils (aka shadow) 4.4 through 4.17.0 establishes a default /etc/subuid behavior (e.g., uid 100000 through 165535 for the first user account) that can realistically conflict with the uids of users defined on locally administered networks, potentially leading to account takeover, e.g., by leveraging newuidmap for access to an NFS home directory (or same-host resources in the case of remote logins by these local network users). NOTE: it may also be argued that system administrators should not have assigned uids, within local networks, that are within the range that can occur in /etc/subuid.\n\n|                |                                                                                            |\n|----------------|--------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/shadow@1%3A4.8.1-2ubuntu2.2?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                        |\n| Fixed version  | not fixed                                                                                  |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3_severity": "LOW",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/shadow@1%3A4.8.1-2ubuntu2.2?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "3.1",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-0167",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-0167"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-0167?s=ubuntu&n=curl&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "When asked to use a `.netrc` file for credentials **and** to follow HTTP redirects, curl could leak the password used for the first host to the followed-to host under certain circumstances.  This flaw only manifests itself if the netrc file has a `default` entry that omits both login and password. A rare circumstance.\n",
+                "markdown": "> When asked to use a `.netrc` file for credentials **and** to follow HTTP redirects, curl could leak the password used for the first host to the followed-to host under certain circumstances.  This flaw only manifests itself if the netrc file has a `default` entry that omits both login and password. A rare circumstance.\n\n|                |                                                                                        |\n|----------------|----------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/curl@7.81.0-1ubuntu1.21?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                    |\n| Fixed version  | not fixed                                                                              |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3_severity": "LOW",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/curl@7.81.0-1ubuntu1.21?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "3.1",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-58056",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-58056: Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-58056?s=github&n=netty-codec-http&ns=io.netty&t=maven&vr=%3C4.1.125.Final",
+              "help": {
+                "text": "## Summary\nA flaw in netty's parsing of chunk extensions in HTTP/1.1 messages with chunked encoding can lead to request smuggling issues with some reverse proxies.\n\n## Details\nWhen encountering a newline character (LF) while parsing a chunk extension, netty interprets the newline as the end of the chunk-size line regardless of whether a preceding carriage return (CR) was found. This is in violation of the HTTP 1.1 standard which specifies that the chunk extension is terminated by a CRLF sequence (see the [RFC](https://datatracker.ietf.org/doc/html/rfc9112#name-chunked-transfer-coding)).\n\nThis is by itself harmless, but consider an intermediary with a similar parsing flaw: while parsing a chunk extension, the intermediary interprets an LF without a preceding CR as simply part of the chunk extension (this is also in violation of the RFC, because whitespace characters are not allowed in chunk extensions). We can use this discrepancy to construct an HTTP request that the intermediary will interpret as one request but netty will interpret as two (all lines ending with CRLF, notice the LFs in the chunk extension):\n\n```\nPOST /one HTTP/1.1\nHost: localhost:8080\nTransfer-Encoding: chunked\n\n48;\\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\\n0\n\nPOST /two HTTP/1.1\nHost: localhost:8080\nTransfer-Encoding: chunked\n\n0\n\n```\n\nThe intermediary will interpret this as a single request. Once forwarded to netty, netty will interpret it as two separate requests. This is a problem, because attackers can then the intermediary, as well as perform standard request smuggling attacks against other live users (see [this Portswigger article](https://portswigger.net/web-security/request-smuggling/exploiting)).\n\n## Impact\nThis is a request smuggling issue which can be exploited for bypassing front-end access control rules as well as corrupting the responses served to other live clients.\n\nThe impact is high, but it only affects setups that use a front-end which:\n1. Interprets LF characters (without preceding CR) in chunk extensions as part of the chunk extension.\n2. Forwards chunk extensions without normalization.\n\n## Disclosure\n\n - This vulnerability was disclosed on June 18th, 2025 here: https://w4ke.info/2025/06/18/funky-chunks.html\n\n## Discussion\nDiscussion for this vulnerability can be found here:\n - https://github.com/netty/netty/issues/15522\n - https://github.com/JLLeitschuh/unCVEed/issues/1\n\n## Credit\n\n - Credit to @JeppW for uncovering this vulnerability.\n - Credit to @JLLeitschuh at [Socket](https://socket.dev/) for coordinating the vulnerability disclosure.\n",
+                "markdown": "> ## Summary\nA flaw in netty's parsing of chunk extensions in HTTP/1.1 messages with chunked encoding can lead to request smuggling issues with some reverse proxies.\n\n## Details\nWhen encountering a newline character (LF) while parsing a chunk extension, netty interprets the newline as the end of the chunk-size line regardless of whether a preceding carriage return (CR) was found. This is in violation of the HTTP 1.1 standard which specifies that the chunk extension is terminated by a CRLF sequence (see the [RFC](https://datatracker.ietf.org/doc/html/rfc9112#name-chunked-transfer-coding)).\n\nThis is by itself harmless, but consider an intermediary with a similar parsing flaw: while parsing a chunk extension, the intermediary interprets an LF without a preceding CR as simply part of the chunk extension (this is also in violation of the RFC, because whitespace characters are not allowed in chunk extensions). We can use this discrepancy to construct an HTTP request that the intermediary will interpret as one request but netty will interpret as two (all lines ending with CRLF, notice the LFs in the chunk extension):\n\n```\nPOST /one HTTP/1.1\nHost: localhost:8080\nTransfer-Encoding: chunked\n\n48;\\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\\n0\n\nPOST /two HTTP/1.1\nHost: localhost:8080\nTransfer-Encoding: chunked\n\n0\n\n```\n\nThe intermediary will interpret this as a single request. Once forwarded to netty, netty will interpret it as two separate requests. This is a problem, because attackers can then the intermediary, as well as perform standard request smuggling attacks against other live users (see [this Portswigger article](https://portswigger.net/web-security/request-smuggling/exploiting)).\n\n## Impact\nThis is a request smuggling issue which can be exploited for bypassing front-end access control rules as well as corrupting the responses served to other live clients.\n\nThe impact is high, but it only affects setups that use a front-end which:\n1. Interprets LF characters (without preceding CR) in chunk extensions as part of the chunk extension.\n2. Forwards chunk extensions without normalization.\n\n## Disclosure\n\n - This vulnerability was disclosed on June 18th, 2025 here: https://w4ke.info/2025/06/18/funky-chunks.html\n\n## Discussion\nDiscussion for this vulnerability can be found here:\n - https://github.com/netty/netty/issues/15522\n - https://github.com/JLLeitschuh/unCVEed/issues/1\n\n## Credit\n\n - Credit to @JeppW for uncovering this vulnerability.\n - Credit to @JLLeitschuh at [Socket](https://socket.dev/) for coordinating the vulnerability disclosure.\n\n|                |                                                   |\n|----------------|---------------------------------------------------|\n| Package        | pkg:maven/io.netty/netty-codec-http@4.1.110.Final |\n| Affected range | <4.1.125.Final                                    |\n| Fixed version  | 4.1.125.Final                                     |\n"
+              },
+              "properties": {
+                "affected_version": "<4.1.125.Final",
+                "cvssV3_severity": "LOW",
+                "fixed_version": "4.1.125.Final",
+                "purls": [
+                  "pkg:maven/io.netty/netty-codec-http@4.1.110.Final"
+                ],
+                "security-severity": "3.1",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-9086",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-9086"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-9086?s=ubuntu&n=curl&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "1. A cookie is set using the `secure` keyword for `https://target` 2. curl is redirected to or otherwise made to speak with `http://target` (same hostname, but using clear text HTTP) using the same cookie set 3. The same cookie name is set - but with just a slash as path (`path='/'`). Since this site is not secure, the cookie *should* just be ignored. 4. A bug in the path comparison logic makes curl read outside a heap buffer boundary  The bug either causes a crash or it potentially makes the comparison come to the wrong conclusion and lets the clear-text site override the contents of the secure cookie, contrary to expectations and depending on the memory contents immediately following the single-byte allocation that holds the path.  The presumed and correct behavior would be to plainly ignore the second set of the cookie since it was already set as secure on a secure host so overriding it on an insecure host should not be okay.\n",
+                "markdown": "> 1. A cookie is set using the `secure` keyword for `https://target` 2. curl is redirected to or otherwise made to speak with `http://target` (same hostname, but using clear text HTTP) using the same cookie set 3. The same cookie name is set - but with just a slash as path (`path='/'`). Since this site is not secure, the cookie *should* just be ignored. 4. A bug in the path comparison logic makes curl read outside a heap buffer boundary  The bug either causes a crash or it potentially makes the comparison come to the wrong conclusion and lets the clear-text site override the contents of the secure cookie, contrary to expectations and depending on the memory contents immediately following the single-byte allocation that holds the path.  The presumed and correct behavior would be to plainly ignore the second set of the cookie since it was already set as secure on a secure host so overriding it on an insecure host should not be okay.\n\n|                |                                                                                        |\n|----------------|----------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/curl@7.81.0-1ubuntu1.21?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                    |\n| Fixed version  | not fixed                                                                              |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3_severity": "LOW",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/curl@7.81.0-1ubuntu1.21?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "3.1",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2022-3219",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2022-3219"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2022-3219?s=ubuntu&n=gnupg2&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "GnuPG can be made to spin on a relatively small input by (for example) crafting a public key with thousands of signatures attached, compressed down to just a few KB.\n",
+                "markdown": "> GnuPG can be made to spin on a relatively small input by (for example) crafting a public key with thousands of signatures attached, compressed down to just a few KB.\n\n|                |                                                                                         |\n|----------------|-----------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/gnupg2@2.2.27-3ubuntu2.4?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                     |\n| Fixed version  | not fixed                                                                               |\n| CVSS Score     |                                                                                     3.3 |\n| CVSS Vector    | CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L                                            |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 3.3,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/gnupg2@2.2.27-3ubuntu2.4?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "3.3",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-29383",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2023-29383"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2023-29383?s=ubuntu&n=shadow&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "In Shadow 4.13, it is possible to inject control characters into fields provided to the SUID program chfn (change finger). Although it is not possible to exploit this directly (e.g., adding a new user fails because \\n is in the block list), it is possible to misrepresent the /etc/passwd file when viewed. Use of \\r manipulations and Unicode characters to work around blocking of the : character make it possible to give the impression that a new user has been added. In other words, an adversary may be able to convince a system administrator to take the system offline (an indirect, social-engineered denial of service) by demonstrating that \"cat /etc/passwd\" shows a rogue user account.\n",
+                "markdown": "> In Shadow 4.13, it is possible to inject control characters into fields provided to the SUID program chfn (change finger). Although it is not possible to exploit this directly (e.g., adding a new user fails because \\n is in the block list), it is possible to misrepresent the /etc/passwd file when viewed. Use of \\r manipulations and Unicode characters to work around blocking of the : character make it possible to give the impression that a new user has been added. In other words, an adversary may be able to convince a system administrator to take the system offline (an indirect, social-engineered denial of service) by demonstrating that \"cat /etc/passwd\" shows a rogue user account.\n\n|                |                                                                                            |\n|----------------|--------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/shadow@1%3A4.8.1-2ubuntu2.2?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                        |\n| Fixed version  | not fixed                                                                                  |\n| CVSS Score     |                                                                                        3.3 |\n| CVSS Vector    | CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N                                               |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 3.3,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/shadow@1%3A4.8.1-2ubuntu2.2?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "3.3",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-8114",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-8114"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-8114?s=ubuntu&n=libssh&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3C0.9.6-2ubuntu0.22.04.5",
+              "help": {
+                "text": "A flaw was found in libssh, a library that implements the SSH protocol. When calculating the session ID during the key exchange (KEX) process, an allocation failure in cryptographic functions may lead to a NULL pointer dereference. This issue can cause the client or server to crash.\n",
+                "markdown": "> A flaw was found in libssh, a library that implements the SSH protocol. When calculating the session ID during the key exchange (KEX) process, an allocation failure in cryptographic functions may lead to a NULL pointer dereference. This issue can cause the client or server to crash.\n\n|                |                                                                                              |\n|----------------|----------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/libssh@0.9.6-2ubuntu0.22.04.4?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | <0.9.6-2ubuntu0.22.04.5                                                                      |\n| Fixed version  | 0.9.6-2ubuntu0.22.04.5                                                                       |\n| CVSS Score     |                                                                                          4.7 |\n| CVSS Vector    | CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:H                                                 |\n"
+              },
+              "properties": {
+                "affected_version": "<0.9.6-2ubuntu0.22.04.5",
+                "cvssV3": 4.7,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:H",
+                "fixed_version": "0.9.6-2ubuntu0.22.04.5",
+                "purls": [
+                  "pkg:deb/ubuntu/libssh@0.9.6-2ubuntu0.22.04.4?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "4.7",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2022-27943",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2022-27943"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2022-27943?s=ubuntu&n=gcc-12&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "libiberty/rust-demangle.c in GNU GCC 11.2 allows stack consumption in demangle_const, as demonstrated by nm-new.\n",
+                "markdown": "> libiberty/rust-demangle.c in GNU GCC 11.2 allows stack consumption in demangle_const, as demonstrated by nm-new.\n\n|                |                                                                                               |\n|----------------|-----------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/gcc-12@12.3.0-1ubuntu1~22.04.2?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                           |\n| Fixed version  | not fixed                                                                                     |\n| CVSS Score     |                                                                                           5.5 |\n| CVSS Vector    | CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H                                                  |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 5.5,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/gcc-12@12.3.0-1ubuntu1~22.04.2?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "5.5",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-7008",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2023-7008"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2023-7008?s=ubuntu&n=systemd&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "A vulnerability was found in systemd-resolved. This issue may allow systemd-resolved to accept records of DNSSEC-signed domains even when they have no signature, allowing man-in-the-middles (or the upstream DNS resolver) to manipulate records.\n",
+                "markdown": "> A vulnerability was found in systemd-resolved. This issue may allow systemd-resolved to accept records of DNSSEC-signed domains even when they have no signature, allowing man-in-the-middles (or the upstream DNS resolver) to manipulate records.\n\n|                |                                                                                           |\n|----------------|-------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/systemd@249.11-0ubuntu3.16?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                       |\n| Fixed version  | not fixed                                                                                 |\n| CVSS Score     |                                                                                       5.9 |\n| CVSS Vector    | CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N                                              |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 5.9,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/systemd@249.11-0ubuntu3.16?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "5.9",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2016-2781",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2016-2781"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2016-2781?s=ubuntu&n=coreutils&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.\n",
+                "markdown": "> chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.\n\n|                |                                                                                            |\n|----------------|--------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/coreutils@8.32-4.1ubuntu1.2?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                        |\n| Fixed version  | not fixed                                                                                  |\n| CVSS Score     |                                                                                        6.5 |\n| CVSS Vector    | CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N                                               |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 6.5,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/coreutils@8.32-4.1ubuntu1.2?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "6.5",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-50495",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2023-50495"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2023-50495?s=ubuntu&n=ncurses&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "NCurse v6.4-20230418 was discovered to contain a segmentation fault via the component _nc_wrap_entry().\n",
+                "markdown": "> NCurse v6.4-20230418 was discovered to contain a segmentation fault via the component _nc_wrap_entry().\n\n|                |                                                                                       |\n|----------------|---------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/ncurses@6.3-2ubuntu0.1?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                   |\n| Fixed version  | not fixed                                                                             |\n| CVSS Score     |                                                                                   6.5 |\n| CVSS Vector    | CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H                                          |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 6.5,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/ncurses@6.3-2ubuntu0.1?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "6.5",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2017-11164",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2017-11164"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2017-11164?s=ubuntu&n=pcre3&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "In PCRE 8.41, the OP_KETRMAX feature in the match function in pcre_exec.c allows stack exhaustion (uncontrolled recursion) when processing a crafted regular expression.\n",
+                "markdown": "> In PCRE 8.41, the OP_KETRMAX feature in the match function in pcre_exec.c allows stack exhaustion (uncontrolled recursion) when processing a crafted regular expression.\n\n|                |                                                                                                 |\n|----------------|-------------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/pcre3@2%3A8.39-13ubuntu0.22.04.1?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                             |\n| Fixed version  | not fixed                                                                                       |\n| CVSS Score     |                                                                                             7.5 |\n| CVSS Vector    | CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H                                                    |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 7.5,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/pcre3@2%3A8.39-13ubuntu0.22.04.1?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2022-41409",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2022-41409"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2022-41409?s=ubuntu&n=pcre2&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "Integer overflow vulnerability in pcre2test before 10.41 allows attackers to cause a denial of service or other unspecified impacts via negative input.\n",
+                "markdown": "> Integer overflow vulnerability in pcre2test before 10.41 allows attackers to cause a denial of service or other unspecified impacts via negative input.\n\n|                |                                                                                       |\n|----------------|---------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/pcre2@10.39-3ubuntu0.1?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                   |\n| Fixed version  | not fixed                                                                             |\n| CVSS Score     |                                                                                   7.5 |\n| CVSS Vector    | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H                                          |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 7.5,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/pcre2@10.39-3ubuntu0.1?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2022-4899",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2022-4899"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2022-4899?s=ubuntu&n=libzstd&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "A vulnerability was found in zstd v1.4.10, where an attacker can supply empty string as an argument to the command line tool to cause buffer overrun.\n",
+                "markdown": "> A vulnerability was found in zstd v1.4.10, where an attacker can supply empty string as an argument to the command line tool to cause buffer overrun.\n\n|                |                                                                                             |\n|----------------|---------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/libzstd@1.4.8%2Bdfsg-3build1?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                         |\n| Fixed version  | not fixed                                                                                   |\n| CVSS Score     |                                                                                         7.5 |\n| CVSS Vector    | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H                                                |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 7.5,
+                "cvssV3_severity": "LOW",
+                "cvssV3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/libzstd@1.4.8%2Bdfsg-3build1?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-45582",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-45582"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-45582?s=ubuntu&n=tar&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "GNU Tar through 1.35 allows file overwrite via directory traversal in crafted TAR archives, with a certain two-step process. First, the victim must extract an archive that contains a ../ symlink to a critical directory. Second, the victim must extract an archive that contains a critical file, specified via a relative pathname that begins with the symlink name and ends with that critical file's name. Here, the extraction follows the symlink and overwrites the critical file. This bypasses the protection mechanism of \"Member name contains '..'\" that would occur for a single TAR archive that attempted to specify the critical file via a ../ approach. For example, the first archive can contain \"x -> ../../../../../home/victim/.ssh\" and the second archive can contain x/authorized_keys. This can affect server applications that automatically extract any number of user-supplied TAR archives, and were relying on the blocking of traversal. This can also affect software installation processes in which \"tar xf\" is run more than once (e.g., when installing a package can automatically install two dependencies that are set up as untrusted tarballs instead of official packages). NOTE: the official GNU Tar manual has an otherwise-empty directory for each \"tar xf\" in its Security Rules of Thumb; however, third-party advice leads users to run \"tar xf\" more than once into the same directory.\n",
+                "markdown": "> GNU Tar through 1.35 allows file overwrite via directory traversal in crafted TAR archives, with a certain two-step process. First, the victim must extract an archive that contains a ../ symlink to a critical directory. Second, the victim must extract an archive that contains a critical file, specified via a relative pathname that begins with the symlink name and ends with that critical file's name. Here, the extraction follows the symlink and overwrites the critical file. This bypasses the protection mechanism of \"Member name contains '..'\" that would occur for a single TAR archive that attempted to specify the critical file via a ../ approach. For example, the first archive can contain \"x -> ../../../../../home/victim/.ssh\" and the second archive can contain x/authorized_keys. This can affect server applications that automatically extract any number of user-supplied TAR archives, and were relying on the blocking of traversal. This can also affect software installation processes in which \"tar xf\" is run more than once (e.g., when installing a package can automatically install two dependencies that are set up as untrusted tarballs instead of official packages). NOTE: the official GNU Tar manual has an otherwise-empty directory for each \"tar xf\" in its Security Rules of Thumb; however, third-party advice leads users to run \"tar xf\" more than once into the same directory.\n\n|                |                                                                                                   |\n|----------------|---------------------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/tar@1.34%2Bdfsg-1ubuntu0.1.22.04.2?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                               |\n| Fixed version  | not fixed                                                                                         |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3_severity": "MEDIUM",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/tar@1.34%2Bdfsg-1ubuntu0.1.22.04.2?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "4.1",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-8941",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-8941"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-8941?s=ubuntu&n=pam&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "A flaw was found in linux-pam. The pam_namespace module may improperly handle user-controlled paths, allowing local users to exploit symlink attacks and race conditions to elevate their privileges to root. This CVE provides a \"complete\" fix for CVE-2025-6020.\n",
+                "markdown": "> A flaw was found in linux-pam. The pam_namespace module may improperly handle user-controlled paths, allowing local users to exploit symlink attacks and race conditions to elevate their privileges to root. This CVE provides a \"complete\" fix for CVE-2025-6020.\n\n|                |                                                                                      |\n|----------------|--------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/pam@1.4.0-11ubuntu2.6?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                  |\n| Fixed version  | not fixed                                                                            |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3_severity": "MEDIUM",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/pam@1.4.0-11ubuntu2.6?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "4.1",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-58183",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-58183"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-58183?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "tar.Reader does not set a maximum size on the number of sparse region data blocks in GNU tar pax 1.0 sparse files. A maliciously-crafted archive containing a large number of sparse regions can cause a Reader to read an unbounded amount of data from the archive into memory. When reading from a compressed source, a small compressed input can result in large allocations.\n",
+                "markdown": "> tar.Reader does not set a maximum size on the number of sparse region data blocks in GNU tar pax 1.0 sparse files. A maliciously-crafted archive containing a large number of sparse regions can cause a Reader to read an unbounded amount of data from the archive into memory. When reading from a compressed source, a small compressed input can result in large allocations.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "MEDIUM",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "4.3",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-47912",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-47912"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-47912?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "The Parse function permits values other than IPv6 addresses to be included in square brackets within the host component of a URL. RFC 3986 permits IPv6 addresses to be included within the host component, enclosed within square brackets. For example: \"http://[::1]/\". IPv4 addresses and hostnames must not appear within square brackets. Parse did not enforce this requirement.\n",
+                "markdown": "> The Parse function permits values other than IPv6 addresses to be included in square brackets within the host component of a URL. RFC 3986 permits IPv6 addresses to be included within the host component, enclosed within square brackets. For example: \"http://[::1]/\". IPv4 addresses and hostnames must not appear within square brackets. Parse did not enforce this requirement.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "MEDIUM",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "5.3",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-58185",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-58185"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-58185?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "Parsing a maliciously crafted DER payload could allocate large amounts of memory, causing memory exhaustion.\n",
+                "markdown": "> Parsing a maliciously crafted DER payload could allocate large amounts of memory, causing memory exhaustion.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "MEDIUM",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "5.3",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-58186",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-58186"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-58186?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "Despite HTTP headers having a default limit of 1MB, the number of cookies that can be parsed does not have a limit. By sending a lot of very small cookies such as \"a=;\", an attacker can make an HTTP server allocate a large amount of structs, causing large memory consumption.\n",
+                "markdown": "> Despite HTTP headers having a default limit of 1MB, the number of cookies that can be parsed does not have a limit. By sending a lot of very small cookies such as \"a=;\", an attacker can make an HTTP server allocate a large amount of structs, causing large memory consumption.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "MEDIUM",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "5.3",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-58189",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-58189"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-58189?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "When Conn.Handshake fails during ALPN negotiation the error contains attacker controlled information (the ALPN protocols sent by the client) which is not escaped.\n",
+                "markdown": "> When Conn.Handshake fails during ALPN negotiation the error contains attacker controlled information (the ALPN protocols sent by the client) which is not escaped.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "MEDIUM",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "5.3",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-61724",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-61724"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-61724?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "The Reader.ReadResponse function constructs a response string through repeated string concatenation of lines. When the number of lines in a response is large, this can cause excessive CPU consumption.\n",
+                "markdown": "> The Reader.ReadResponse function constructs a response string through repeated string concatenation of lines. When the number of lines in a response is large, this can cause excessive CPU consumption.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "MEDIUM",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "5.3",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2024-47535",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2024-47535: Uncontrolled Resource Consumption"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2024-47535?s=github&n=netty-common&ns=io.netty&t=maven&vr=%3C%3D4.1.114.Final",
+              "help": {
+                "text": "### Summary\n\nAn unsafe reading of environment file could potentially cause a denial of service in Netty.\nWhen loaded on an Windows application, Netty attemps to load a file that does not exist. If an attacker creates such a large file, the Netty application crash.\n\n\n### Details\n\nWhen the library netty is loaded in a java windows application, the library tries to identify the system environnement in which it is executed.\n\nAt this stage, Netty tries to load both `/etc/os-release` and `/usr/lib/os-release` even though it is in a Windows environment. \n\n<img width=\"364\" alt=\"1\" src=\"https://github.com/user-attachments/assets/9466b181-9394-45a3-b0e3-1dcf105def59\">\n\nIf netty finds this files, it reads them and loads them into memory.\n\nBy default :\n\n- The JVM maximum memory size is set to 1 GB,\n- A non-privileged user can create a directory at `C:\\` and create files within it.\n\n<img width=\"340\" alt=\"2\" src=\"https://github.com/user-attachments/assets/43b359a2-5871-4592-ae2b-ffc40ac76831\">\n\n<img width=\"523\" alt=\"3\" src=\"https://github.com/user-attachments/assets/ad5c6eed-451c-4513-92d5-ba0eee7715c1\">\n\nthe source code identified :\nhttps://github.com/netty/netty/blob/4.1/common/src/main/java/io/netty/util/internal/PlatformDependent.java\n\nDespite the implementation of the function `normalizeOs()` the source code not verify the OS before reading `C:\\etc\\os-release` and `C:\\usr\\lib\\os-release`.\n\n### PoC\n\nCreate a file larger than 1 GB of data in `C:\\etc\\os-release` or `C:\\usr\\lib\\os-release` on a Windows environnement and start your Netty application.\n\nTo observe what the application does with the file, the security analyst used \"Process Monitor\" from the \"Windows SysInternals\" suite. (https://learn.microsoft.com/en-us/sysinternals/)\n\n```\ncd C:\\etc\nfsutil file createnew os-release 3000000000\n```\n\n<img width=\"519\" alt=\"4\" src=\"https://github.com/user-attachments/assets/39df22a3-462b-4fd0-af9a-aa30077ec08f\">\n\n<img width=\"517\" alt=\"5\" src=\"https://github.com/user-attachments/assets/129dbd50-fc36-4da5-8eb1-582123fb528f\">\n\nThe source code used is the Netty website code example : [Echo ‐ the very basic client and server](https://netty.io/4.1/xref/io/netty/example/echo/package-summary.html).\n\nThe vulnerability was tested on the 4.1.112.Final version.\n\nThe security analyst tried the same technique for `C:\\proc\\sys\\net\\core\\somaxconn` with a lot of values to impact Netty but the only things that works is the \"larger than 1 GB file\" technique. https://github.com/netty/netty/blob/c0fdb8e9f8f256990e902fcfffbbe10754d0f3dd/common/src/main/java/io/netty/util/NetUtil.java#L186\n\n### Impact\n\nBy loading the \"file larger than 1 GB\" into the memory, the Netty library exceeds the JVM memory limit and causes a crash in the java Windows application.\n\nThis behaviour occurs 100% of the time in both Server mode and Client mode if the large file exists.\n\nClient mode :\n\n<img width=\"449\" alt=\"6\" src=\"https://github.com/user-attachments/assets/f8fe1ed0-1a42-4490-b9ed-dbc9af7804be\">\n\nServer mode :\n\n<img width=\"464\" alt=\"7\" src=\"https://github.com/user-attachments/assets/b34b42bd-4fbd-4170-b93a-d29ba87b88eb\">\n\nsomaxconn :\n\n<img width=\"532\" alt=\"8\" src=\"https://github.com/user-attachments/assets/0656b3bb-32c6-4ae2-bff7-d93babba08a3\">\n\n### Severity\n\n- Attack vector : \"Local\" because the attacker needs to be on the system where the Netty application is running.\n- Attack complexity : \"Low\" because the attacker only need to create a massive file (regardless of its contents).\n- Privileges required : \"Low\" because the attacker requires a user account to exploit the vulnerability.\n- User intercation : \"None\" because the administrator don't need to accidentally click anywhere to trigger the vulnerability. Furthermore, the exploitation works with defaults windows/AD settings.\n- Scope : \"Unchanged\" because only Netty is affected by the vulnerability.\n- Confidentiality : \"None\" because no data is exposed through exploiting the vulnerability.\n- Integrity : \"None\" because the explotation of the vulnerability does not allow editing, deleting or adding data elsewhere.\n- Availability : \"High\" because the exploitation of this vulnerability crashes the entire java application.\n",
+                "markdown": "> ### Summary\n\nAn unsafe reading of environment file could potentially cause a denial of service in Netty.\nWhen loaded on an Windows application, Netty attemps to load a file that does not exist. If an attacker creates such a large file, the Netty application crash.\n\n\n### Details\n\nWhen the library netty is loaded in a java windows application, the library tries to identify the system environnement in which it is executed.\n\nAt this stage, Netty tries to load both `/etc/os-release` and `/usr/lib/os-release` even though it is in a Windows environment. \n\n<img width=\"364\" alt=\"1\" src=\"https://github.com/user-attachments/assets/9466b181-9394-45a3-b0e3-1dcf105def59\">\n\nIf netty finds this files, it reads them and loads them into memory.\n\nBy default :\n\n- The JVM maximum memory size is set to 1 GB,\n- A non-privileged user can create a directory at `C:\\` and create files within it.\n\n<img width=\"340\" alt=\"2\" src=\"https://github.com/user-attachments/assets/43b359a2-5871-4592-ae2b-ffc40ac76831\">\n\n<img width=\"523\" alt=\"3\" src=\"https://github.com/user-attachments/assets/ad5c6eed-451c-4513-92d5-ba0eee7715c1\">\n\nthe source code identified :\nhttps://github.com/netty/netty/blob/4.1/common/src/main/java/io/netty/util/internal/PlatformDependent.java\n\nDespite the implementation of the function `normalizeOs()` the source code not verify the OS before reading `C:\\etc\\os-release` and `C:\\usr\\lib\\os-release`.\n\n### PoC\n\nCreate a file larger than 1 GB of data in `C:\\etc\\os-release` or `C:\\usr\\lib\\os-release` on a Windows environnement and start your Netty application.\n\nTo observe what the application does with the file, the security analyst used \"Process Monitor\" from the \"Windows SysInternals\" suite. (https://learn.microsoft.com/en-us/sysinternals/)\n\n```\ncd C:\\etc\nfsutil file createnew os-release 3000000000\n```\n\n<img width=\"519\" alt=\"4\" src=\"https://github.com/user-attachments/assets/39df22a3-462b-4fd0-af9a-aa30077ec08f\">\n\n<img width=\"517\" alt=\"5\" src=\"https://github.com/user-attachments/assets/129dbd50-fc36-4da5-8eb1-582123fb528f\">\n\nThe source code used is the Netty website code example : [Echo ‐ the very basic client and server](https://netty.io/4.1/xref/io/netty/example/echo/package-summary.html).\n\nThe vulnerability was tested on the 4.1.112.Final version.\n\nThe security analyst tried the same technique for `C:\\proc\\sys\\net\\core\\somaxconn` with a lot of values to impact Netty but the only things that works is the \"larger than 1 GB file\" technique. https://github.com/netty/netty/blob/c0fdb8e9f8f256990e902fcfffbbe10754d0f3dd/common/src/main/java/io/netty/util/NetUtil.java#L186\n\n### Impact\n\nBy loading the \"file larger than 1 GB\" into the memory, the Netty library exceeds the JVM memory limit and causes a crash in the java Windows application.\n\nThis behaviour occurs 100% of the time in both Server mode and Client mode if the large file exists.\n\nClient mode :\n\n<img width=\"449\" alt=\"6\" src=\"https://github.com/user-attachments/assets/f8fe1ed0-1a42-4490-b9ed-dbc9af7804be\">\n\nServer mode :\n\n<img width=\"464\" alt=\"7\" src=\"https://github.com/user-attachments/assets/b34b42bd-4fbd-4170-b93a-d29ba87b88eb\">\n\nsomaxconn :\n\n<img width=\"532\" alt=\"8\" src=\"https://github.com/user-attachments/assets/0656b3bb-32c6-4ae2-bff7-d93babba08a3\">\n\n### Severity\n\n- Attack vector : \"Local\" because the attacker needs to be on the system where the Netty application is running.\n- Attack complexity : \"Low\" because the attacker only need to create a massive file (regardless of its contents).\n- Privileges required : \"Low\" because the attacker requires a user account to exploit the vulnerability.\n- User intercation : \"None\" because the administrator don't need to accidentally click anywhere to trigger the vulnerability. Furthermore, the exploitation works with defaults windows/AD settings.\n- Scope : \"Unchanged\" because only Netty is affected by the vulnerability.\n- Confidentiality : \"None\" because no data is exposed through exploiting the vulnerability.\n- Integrity : \"None\" because the explotation of the vulnerability does not allow editing, deleting or adding data elsewhere.\n- Availability : \"High\" because the exploitation of this vulnerability crashes the entire java application.\n\n|                |                                                                     |\n|----------------|---------------------------------------------------------------------|\n| Package        | pkg:maven/io.netty/netty-common@4.1.110.Final                       |\n| Affected range | <=4.1.114.Final                                                     |\n| Fixed version  | 4.1.115.Final                                                       |\n| CVSS Score     |                                                                 5.4 |\n| CVSS Vector    | CVSS:4.0/AV:L/AC:L/AT:N/PR:L/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/E:P |\n"
+              },
+              "properties": {
+                "affected_version": "<=4.1.114.Final",
+                "cvssV3": 5.4,
+                "cvssV3_severity": "MEDIUM",
+                "cvssV3_vector": "CVSS:4.0/AV:L/AC:L/AT:N/PR:L/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/E:P",
+                "fixed_version": "4.1.115.Final",
+                "purls": [
+                  "pkg:maven/io.netty/netty-common@4.1.110.Final"
+                ],
+                "security-severity": "5.4",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-25193",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-25193: Uncontrolled Resource Consumption"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-25193?s=github&n=netty-common&ns=io.netty&t=maven&vr=%3C4.1.118.Final",
+              "help": {
+                "text": "### Summary\nAn unsafe reading of environment file could potentially cause a denial of service in Netty.\nWhen loaded on an Windows application, Netty attemps to load a file that does not exist. If an attacker creates such a large file, the Netty application crash.\n\n### Details\nA similar issue was previously reported in https://github.com/netty/netty/security/advisories/GHSA-xq3w-v528-46rv\nThis issue was fixed, but the fix was incomplete in that null-bytes were not counted against the input limit.\n\n\n### PoC\nThe PoC is the same as for https://github.com/netty/netty/security/advisories/GHSA-xq3w-v528-46rv with the detail that the file should only contain null-bytes; 0x00.\nWhen the null-bytes are encountered by the `InputStreamReader`, it will issue replacement characters in its charset decoding, which will fill up the line-buffer in the `BufferedReader.readLine()`, because the replacement character is not a line-break character.\n\n### Impact\nImpact is the same as https://github.com/netty/netty/security/advisories/GHSA-xq3w-v528-46rv\n",
+                "markdown": "> ### Summary\nAn unsafe reading of environment file could potentially cause a denial of service in Netty.\nWhen loaded on an Windows application, Netty attemps to load a file that does not exist. If an attacker creates such a large file, the Netty application crash.\n\n### Details\nA similar issue was previously reported in https://github.com/netty/netty/security/advisories/GHSA-xq3w-v528-46rv\nThis issue was fixed, but the fix was incomplete in that null-bytes were not counted against the input limit.\n\n\n### PoC\nThe PoC is the same as for https://github.com/netty/netty/security/advisories/GHSA-xq3w-v528-46rv with the detail that the file should only contain null-bytes; 0x00.\nWhen the null-bytes are encountered by the `InputStreamReader`, it will issue replacement characters in its charset decoding, which will fill up the line-buffer in the `BufferedReader.readLine()`, because the replacement character is not a line-break character.\n\n### Impact\nImpact is the same as https://github.com/netty/netty/security/advisories/GHSA-xq3w-v528-46rv\n\n|                |                                               |\n|----------------|-----------------------------------------------|\n| Package        | pkg:maven/io.netty/netty-common@4.1.110.Final |\n| Affected range | <4.1.118.Final                                |\n| Fixed version  | 4.1.118.Final                                 |\n| CVSS Score     |                                           5.5 |\n| CVSS Vector    | CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H  |\n"
+              },
+              "properties": {
+                "affected_version": "<4.1.118.Final",
+                "cvssV3": 5.5,
+                "cvssV3_severity": "MEDIUM",
+                "cvssV3_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+                "fixed_version": "4.1.118.Final",
+                "purls": [
+                  "pkg:maven/io.netty/netty-common@4.1.110.Final"
+                ],
+                "security-severity": "5.5",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-53864",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-53864: Uncontrolled Recursion"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-53864?s=github&n=nimbus-jose-jwt&ns=com.nimbusds&t=maven&vr=%3E%3D9.38-rc1%2C%3C10.0.2",
+              "help": {
+                "text": "Connect2id Nimbus JOSE + JWT before 10.0.2 allows a remote attacker to cause a denial of service via a deeply nested JSON object supplied in a JWT claim set, because of uncontrolled recursion. NOTE: this is independent of the Gson 2.11.0 issue because the Connect2id product could have checked the JSON object nesting depth, regardless of what limits (if any) were imposed by Gson.\n",
+                "markdown": "> Connect2id Nimbus JOSE + JWT before 10.0.2 allows a remote attacker to cause a denial of service via a deeply nested JSON object supplied in a JWT claim set, because of uncontrolled recursion. NOTE: this is independent of the Gson 2.11.0 issue because the Connect2id product could have checked the JSON object nesting depth, regardless of what limits (if any) were imposed by Gson.\n\n|                |                                              |\n|----------------|----------------------------------------------|\n| Package        | pkg:maven/com.nimbusds/nimbus-jose-jwt@9.40  |\n| Affected range | >=9.38-rc1,<10.0.2                           |\n| Fixed version  | 10.0.2                                       |\n| CVSS Score     |                                          5.8 |\n| CVSS Vector    | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:L |\n"
+              },
+              "properties": {
+                "affected_version": ">=9.38-rc1,<10.0.2",
+                "cvssV3": 5.8,
+                "cvssV3_severity": "MEDIUM",
+                "cvssV3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:L",
+                "fixed_version": "10.0.2",
+                "purls": [
+                  "pkg:maven/com.nimbusds/nimbus-jose-jwt@9.40"
+                ],
+                "security-severity": "5.8",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2021-31879",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2021-31879"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2021-31879?s=ubuntu&n=wget&ns=ubuntu&t=deb&osn=ubuntu&osv=22.04&vr=%3E%3D0",
+              "help": {
+                "text": "GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007.\n",
+                "markdown": "> GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007.\n\n|                |                                                                                       |\n|----------------|---------------------------------------------------------------------------------------|\n| Package        | pkg:deb/ubuntu/wget@1.21.2-2ubuntu1.1?os_distro=jammy&os_name=ubuntu&os_version=22.04 |\n| Affected range | >=0                                                                                   |\n| Fixed version  | not fixed                                                                             |\n| CVSS Score     |                                                                                   6.1 |\n| CVSS Vector    | CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N                                          |\n"
+              },
+              "properties": {
+                "affected_version": ">=0",
+                "cvssV3": 6.1,
+                "cvssV3_severity": "MEDIUM",
+                "cvssV3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+                "fixed_version": "not fixed",
+                "purls": [
+                  "pkg:deb/ubuntu/wget@1.21.2-2ubuntu1.1?os_distro=jammy&os_name=ubuntu&os_version=22.04"
+                ],
+                "security-severity": "6.1",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-58057",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-58057: Improper Handling of Highly Compressed Data (Data Amplification)"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-58057?s=github&n=netty-codec&ns=io.netty&t=maven&vr=%3C4.1.125.Final",
+              "help": {
+                "text": "### Summary\n\nWith specially crafted input, `BrotliDecoder` and some other decompressing decoders will allocate a large number of reachable byte buffers, which can lead to denial of service.\n\n### Details\n\n`BrotliDecoder.decompress` has no limit in how often it calls `pull`, decompressing data 64K bytes at a time. The buffers are saved in the output list, and remain reachable until OOM is hit. This is basically a zip bomb.\n\nTested on 4.1.118, but there were no changes to the decoder since.\n\n### PoC\n\nRun this test case with `-Xmx1G`:\n\n```java\nimport io.netty.buffer.Unpooled;\nimport io.netty.channel.embedded.EmbeddedChannel;\n\nimport java.util.Base64;\n\npublic class T {\n    public static void main(String[] args) {\n        EmbeddedChannel channel = new EmbeddedChannel(new BrotliDecoder());\n        channel.writeInbound(Unpooled.wrappedBuffer(Base64.getDecoder().decode(\"aPpxD1tETigSAGj6cQ8vRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROMBIAEgIaHwBETlQQVFcXlgA=\")));\n    }\n}\n```\n\nError:\n\n```\nException in thread \"main\" java.lang.OutOfMemoryError: Cannot reserve 4194304 bytes of direct buffer memory (allocated: 1069580289, limit: 1073741824)\n\tat java.base/java.nio.Bits.reserveMemory(Bits.java:178)\n\tat java.base/java.nio.DirectByteBuffer.<init>(DirectByteBuffer.java:121)\n\tat java.base/java.nio.ByteBuffer.allocateDirect(ByteBuffer.java:332)\n\tat io.netty.buffer.PoolArena$DirectArena.allocateDirect(PoolArena.java:718)\n\tat io.netty.buffer.PoolArena$DirectArena.newChunk(PoolArena.java:693)\n\tat io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:213)\n\tat io.netty.buffer.PoolArena.tcacheAllocateNormal(PoolArena.java:195)\n\tat io.netty.buffer.PoolArena.allocate(PoolArena.java:137)\n\tat io.netty.buffer.PoolArena.allocate(PoolArena.java:127)\n\tat io.netty.buffer.PooledByteBufAllocator.newDirectBuffer(PooledByteBufAllocator.java:403)\n\tat io.netty.buffer.AbstractByteBufAllocator.directBuffer(AbstractByteBufAllocator.java:188)\n\tat io.netty.buffer.AbstractByteBufAllocator.directBuffer(AbstractByteBufAllocator.java:179)\n\tat io.netty.buffer.AbstractByteBufAllocator.buffer(AbstractByteBufAllocator.java:116)\n\tat io.netty.handler.codec.compression.BrotliDecoder.pull(BrotliDecoder.java:70)\n\tat io.netty.handler.codec.compression.BrotliDecoder.decompress(BrotliDecoder.java:101)\n\tat io.netty.handler.codec.compression.BrotliDecoder.decode(BrotliDecoder.java:137)\n\tat io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)\n\tat io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)\n\tat io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)\n\tat io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1357)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:868)\n\tat io.netty.channel.embedded.EmbeddedChannel.writeInbound(EmbeddedChannel.java:348)\n\tat io.netty.handler.codec.compression.T.main(T.java:11)\n```\n\n### Impact\n\nDoS for anyone using `BrotliDecoder` on untrusted input.\n",
+                "markdown": "> ### Summary\n\nWith specially crafted input, `BrotliDecoder` and some other decompressing decoders will allocate a large number of reachable byte buffers, which can lead to denial of service.\n\n### Details\n\n`BrotliDecoder.decompress` has no limit in how often it calls `pull`, decompressing data 64K bytes at a time. The buffers are saved in the output list, and remain reachable until OOM is hit. This is basically a zip bomb.\n\nTested on 4.1.118, but there were no changes to the decoder since.\n\n### PoC\n\nRun this test case with `-Xmx1G`:\n\n```java\nimport io.netty.buffer.Unpooled;\nimport io.netty.channel.embedded.EmbeddedChannel;\n\nimport java.util.Base64;\n\npublic class T {\n    public static void main(String[] args) {\n        EmbeddedChannel channel = new EmbeddedChannel(new BrotliDecoder());\n        channel.writeInbound(Unpooled.wrappedBuffer(Base64.getDecoder().decode(\"aPpxD1tETigSAGj6cQ8vRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROKBIAaPpxD1tETigSAGj6cQ9bRE4oEgBo+nEPW0ROMBIAEgIaHwBETlQQVFcXlgA=\")));\n    }\n}\n```\n\nError:\n\n```\nException in thread \"main\" java.lang.OutOfMemoryError: Cannot reserve 4194304 bytes of direct buffer memory (allocated: 1069580289, limit: 1073741824)\n\tat java.base/java.nio.Bits.reserveMemory(Bits.java:178)\n\tat java.base/java.nio.DirectByteBuffer.<init>(DirectByteBuffer.java:121)\n\tat java.base/java.nio.ByteBuffer.allocateDirect(ByteBuffer.java:332)\n\tat io.netty.buffer.PoolArena$DirectArena.allocateDirect(PoolArena.java:718)\n\tat io.netty.buffer.PoolArena$DirectArena.newChunk(PoolArena.java:693)\n\tat io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:213)\n\tat io.netty.buffer.PoolArena.tcacheAllocateNormal(PoolArena.java:195)\n\tat io.netty.buffer.PoolArena.allocate(PoolArena.java:137)\n\tat io.netty.buffer.PoolArena.allocate(PoolArena.java:127)\n\tat io.netty.buffer.PooledByteBufAllocator.newDirectBuffer(PooledByteBufAllocator.java:403)\n\tat io.netty.buffer.AbstractByteBufAllocator.directBuffer(AbstractByteBufAllocator.java:188)\n\tat io.netty.buffer.AbstractByteBufAllocator.directBuffer(AbstractByteBufAllocator.java:179)\n\tat io.netty.buffer.AbstractByteBufAllocator.buffer(AbstractByteBufAllocator.java:116)\n\tat io.netty.handler.codec.compression.BrotliDecoder.pull(BrotliDecoder.java:70)\n\tat io.netty.handler.codec.compression.BrotliDecoder.decompress(BrotliDecoder.java:101)\n\tat io.netty.handler.codec.compression.BrotliDecoder.decode(BrotliDecoder.java:137)\n\tat io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)\n\tat io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)\n\tat io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)\n\tat io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1357)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:868)\n\tat io.netty.channel.embedded.EmbeddedChannel.writeInbound(EmbeddedChannel.java:348)\n\tat io.netty.handler.codec.compression.T.main(T.java:11)\n```\n\n### Impact\n\nDoS for anyone using `BrotliDecoder` on untrusted input.\n\n|                |                                                                 |\n|----------------|-----------------------------------------------------------------|\n| Package        | pkg:maven/io.netty/netty-codec@4.1.110.Final                    |\n| Affected range | <4.1.125.Final                                                  |\n| Fixed version  | 4.1.125.Final                                                   |\n| CVSS Score     |                                                             6.9 |\n| CVSS Vector    | CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N |\n"
+              },
+              "properties": {
+                "affected_version": "<4.1.125.Final",
+                "cvssV3": 6.9,
+                "cvssV3_severity": "MEDIUM",
+                "cvssV3_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+                "fixed_version": "4.1.125.Final",
+                "purls": [
+                  "pkg:maven/io.netty/netty-codec@4.1.110.Final"
+                ],
+                "security-severity": "6.9",
+                "tags": [
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2024-57699",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2024-57699: Uncontrolled Recursion"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2024-57699?s=github&n=json-smart&ns=net.minidev&t=maven&vr=%3E%3D2.5.0%2C%3C2.5.2",
+              "help": {
+                "text": "A security issue was found in Netplex Json-smart 2.5.0 through 2.5.1. When loading a specially crafted JSON input, containing a large number of ’{’, a stack exhaustion can be trigger, which could allow an attacker to cause a Denial of Service (DoS). This issue exists because of an incomplete fix for CVE-2023-1370.\n\nThe fixed version only addresses the default modes provided by [JSONParser](https://github.com/netplex/json-smart-v2/blob/master/json-smart/src/main/java/net/minidev/json/parser/JSONParser.java#L118), such as `MODE_RFC4627`. If you create the JSONParser manually or with custom options, make sure to set the `LIMIT_JSON_DEPTH` option.\n",
+                "markdown": "> A security issue was found in Netplex Json-smart 2.5.0 through 2.5.1. When loading a specially crafted JSON input, containing a large number of ’{’, a stack exhaustion can be trigger, which could allow an attacker to cause a Denial of Service (DoS). This issue exists because of an incomplete fix for CVE-2023-1370.\n\nThe fixed version only addresses the default modes provided by [JSONParser](https://github.com/netplex/json-smart-v2/blob/master/json-smart/src/main/java/net/minidev/json/parser/JSONParser.java#L118), such as `MODE_RFC4627`. If you create the JSONParser manually or with custom options, make sure to set the `LIMIT_JSON_DEPTH` option.\n\n|                |                                              |\n|----------------|----------------------------------------------|\n| Package        | pkg:maven/net.minidev/json-smart@2.5.1       |\n| Affected range | >=2.5.0,<2.5.2                               |\n| Fixed version  | 2.5.2                                        |\n| CVSS Score     |                                          7.5 |\n| CVSS Vector    | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H |\n"
+              },
+              "properties": {
+                "affected_version": ">=2.5.0,<2.5.2",
+                "cvssV3": 7.5,
+                "cvssV3_severity": "HIGH",
+                "cvssV3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "fixed_version": "2.5.2",
+                "purls": [
+                  "pkg:maven/net.minidev/json-smart@2.5.1"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-24970",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-24970: Improper Input Validation"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-24970?s=github&n=netty-handler&ns=io.netty&t=maven&vr=%3E%3D4.1.91.Final%2C%3C%3D4.1.117.Final",
+              "help": {
+                "text": "### Impact\nWhen a special crafted packet is received via SslHandler it doesn't correctly handle validation of such a packet in all cases which can lead to a native crash.\n\n### Workarounds\nAs workaround its possible to either disable the usage of the native SSLEngine or changing the code from:\n\n```\nSslContext context = ...;\nSslHandler handler = context.newHandler(....);\n```\n\nto:\n\n```\nSslContext context = ...;\nSSLEngine engine = context.newEngine(....);\nSslHandler handler = new SslHandler(engine, ....);\n```\n",
+                "markdown": "> ### Impact\nWhen a special crafted packet is received via SslHandler it doesn't correctly handle validation of such a packet in all cases which can lead to a native crash.\n\n### Workarounds\nAs workaround its possible to either disable the usage of the native SSLEngine or changing the code from:\n\n```\nSslContext context = ...;\nSslHandler handler = context.newHandler(....);\n```\n\nto:\n\n```\nSslContext context = ...;\nSSLEngine engine = context.newEngine(....);\nSslHandler handler = new SslHandler(engine, ....);\n```\n\n|                |                                                |\n|----------------|------------------------------------------------|\n| Package        | pkg:maven/io.netty/netty-handler@4.1.110.Final |\n| Affected range | >=4.1.91.Final,<=4.1.117.Final                 |\n| Fixed version  | 4.1.118.Final                                  |\n| CVSS Score     |                                            7.5 |\n| CVSS Vector    | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H   |\n"
+              },
+              "properties": {
+                "affected_version": ">=4.1.91.Final,<=4.1.117.Final",
+                "cvssV3": 7.5,
+                "cvssV3_severity": "HIGH",
+                "cvssV3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "fixed_version": "4.1.118.Final",
+                "purls": [
+                  "pkg:maven/io.netty/netty-handler@4.1.110.Final"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-58187",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-58187"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-58187?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.3",
+              "help": {
+                "text": "Due to the design of the name constraint checking algorithm, the processing time of some inputs scals non-linearly with respect to the size of the certificate.\n\nThis affects programs which validate arbitrary certificate chains.\n",
+                "markdown": "> Due to the design of the name constraint checking algorithm, the processing time of some inputs scals non-linearly with respect to the size of the certificate.\n\nThis affects programs which validate arbitrary certificate chains.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.3         |\n| Fixed version  | 1.25.3                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.3",
+                "cvssV3_severity": "HIGH",
+                "fixed_version": "1.25.3",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-58188",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-58188"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-58188?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "Validating certificate chains which contain DSA public keys can cause programs to panic, due to a interface cast that assumes they implement the Equal method.\n\nThis affects programs which validate arbitrary certificate chains.\n",
+                "markdown": "> Validating certificate chains which contain DSA public keys can cause programs to panic, due to a interface cast that assumes they implement the Equal method.\n\nThis affects programs which validate arbitrary certificate chains.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "HIGH",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-61723",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-61723"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-61723?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "The processing time for parsing some invalid inputs scales non-linearly with respect to the size of the input.\n\nThis affects programs which parse untrusted PEM inputs.\n",
+                "markdown": "> The processing time for parsing some invalid inputs scales non-linearly with respect to the size of the input.\n\nThis affects programs which parse untrusted PEM inputs.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "HIGH",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-61725",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-61725"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-61725?s=golang&n=stdlib&t=golang&vr=%3E%3D1.25.0%2C%3C1.25.2",
+              "help": {
+                "text": "The ParseAddress function constructeds domain-literal address components through repeated string concatenation. When parsing large domain-literal components, this can cause excessive CPU consumption.\n",
+                "markdown": "> The ParseAddress function constructeds domain-literal address components through repeated string concatenation. When parsing large domain-literal components, this can cause excessive CPU consumption.\n\n|                |                          |\n|----------------|--------------------------|\n| Package        | pkg:golang/stdlib@1.25.1 |\n| Affected range | >=1.25.0,<1.25.2         |\n| Fixed version  | 1.25.2                   |\n"
+              },
+              "properties": {
+                "affected_version": ">=1.25.0,<1.25.2",
+                "cvssV3_severity": "HIGH",
+                "fixed_version": "1.25.2",
+                "purls": [
+                  "pkg:golang/stdlib@1.25.1"
+                ],
+                "security-severity": "7.5",
+                "tags": [
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-55163",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2025-55163: Allocation of Resources Without Limits or Throttling"
+              },
+              "helpUri": "https://scout.docker.com/v/CVE-2025-55163?s=github&n=netty-codec-http2&ns=io.netty&t=maven&vr=%3C%3D4.1.123.Final",
+              "help": {
+                "text": "Below is a technical explanation of a newly discovered vulnerability in HTTP/2, which we refer to as “MadeYouReset.”\n\n### MadeYouReset Vulnerability Summary\nThe MadeYouReset DDoS vulnerability is a logical vulnerability in the HTTP/2 protocol, that uses malformed HTTP/2 control frames in order to break the max concurrent streams limit - which results in resource exhaustion and distributed denial of service.\n\n### Mechanism\nThe vulnerability uses malformed HTTP/2 control frames, or malformed flow, in order to make the server reset streams created by the client (using the RST_STREAM frame). \nThe vulnerability could be triggered by several primitives, defined by the RFC of HTTP/2 (RFC 9113). The Primitives are:\n1. WINDOW_UPDATE frame with an increment of 0 or an increment that makes the window exceed 2^31 - 1. (section 6.9 + 6.9.1)\n2. HEADERS or DATA frames sent on a half-closed (remote) stream (which was closed using the END_STREAM flag). (note that for some implementations it's possible a CONTINUATION frame to trigger that as well - but it's very rare). (Section 5.1)\n3. PRIORITY frame with a length other than 5. (section 6.3)\nFrom our experience, the primitives are likely to exist in the decreasing order listed above.\nNote that based on the implementation of the library, other primitives (which are not defined by the RFC) might exist - meaning scenarios in which RST_STREAM is not supposed to be sent, but in the implementation it does. On the other hand - some RFC-defined primitives might not work, even though they are defined by the RFC (as some implementations are not fully complying with RFC). For example, some implementations we’ve seen discard the PRIORITY frame - and thus does not return RST_STREAM, and some implementations send GO_AWAY when receiving a WINDOW_UPDATE frame with increment of 0.\n\nThe vulnerability takes advantage of a design flaw in the HTTP/2 protocol - While HTTP/2 has a limit on the number of concurrently active streams per connection (which is usually 100, and is set by the parameter SETTINGS_MAX_CONCURRENT_STREAMS), the number of active streams is not counted correctly - when a stream is reset, it is immediately considered not active, and thus unaccounted for in the active streams counter. \nWhile the protocol does not count those streams as active, the server’s backend logic still processes and handles the requests that were canceled.\n\nThus, the attacker can exploit this vulnerability to cause the server to handle an unbounded number of concurrent streams from a client on the same connection. The exploitation is very simple: the client issues a request in a stream, and then sends the control frame that causes the server to send a RST_STREAM.\n\n### Attack Flow\nFor example, a possible attack scenario can be: \n1. Attacker opens an HTTP/2 connection to the server.\n2. Attacker sends HEADERS frame with END_STREAM flag on a new stream X.  \n3. Attacker sends WINDOW_UPDATE for stream X with flow-control window of 0.\n4. The server receives the WINDOW_UPDATE and immediately sends RST_STREAM for stream X to the client (+ decreases the active streams counter by 1).\n\nThe attacker can repeat steps 2+3 as rapidly as it is capable, since the active streams counter never exceeds 1 and the attacker does not need to wait for the response from the server.\nThis leads to resource exhaustion and distributed denial of service vulnerabilities with an impact of: CPU overload and/or memory exhaustion (implementation dependent)\n\n### Comparison to Rapid Reset\nThe vulnerability takes advantage of a design flow in the HTTP/2 protocol that was also used in the Rapid Reset vulnerability (CVE-2023-44487) which was exploited as a zero-day in the wild in August 2023 to October 2023, against multiple services and vendors.\nThe Rapid Reset vulnerability uses RST_STREAM frames sent from the client, in order to create an unbounded amount of concurrent streams - it was given a CVSS score of 7.5.\nRapid Reset was mostly mitigated by limiting the number/rate of RST_STREAM sent from the client, which does not mitigate the MadeYouReset attack - since it triggers the server to send a RST_STREAM.\n\n### Suggested Mitigations for MadeYouReset\nA quick and easy mitigation will be to limit the number/rate of RST_STREAMs sent from the server.\nIt is also possible to limit the number/rate of control frames sent by the client (e.g. WINDOW_UPDATE and PRIORITY), and treat protocol flow errors as a connection error.\n\nAs mentioned in our previous message, this is a protocol-level vulnerability that affects multiple vendors and implementations. Given its broad impact, it is the shared responsibility of all parties involved to handle the disclosure process carefully and coordinate mitigations effectively.\n\n\nIf you have any questions, we will be happy to clarify or schedule a Zoom call.\n\nGal, Anat and Yaniv.\n",
+                "markdown": "> Below is a technical explanation of a newly discovered vulnerability in HTTP/2, which we refer to as “MadeYouReset.”\n\n### MadeYouReset Vulnerability Summary\nThe MadeYouReset DDoS vulnerability is a logical vulnerability in the HTTP/2 protocol, that uses malformed HTTP/2 control frames in order to break the max concurrent streams limit - which results in resource exhaustion and distributed denial of service.\n\n### Mechanism\nThe vulnerability uses malformed HTTP/2 control frames, or malformed flow, in order to make the server reset streams created by the client (using the RST_STREAM frame). \nThe vulnerability could be triggered by several primitives, defined by the RFC of HTTP/2 (RFC 9113). The Primitives are:\n1. WINDOW_UPDATE frame with an increment of 0 or an increment that makes the window exceed 2^31 - 1. (section 6.9 + 6.9.1)\n2. HEADERS or DATA frames sent on a half-closed (remote) stream (which was closed using the END_STREAM flag). (note that for some implementations it's possible a CONTINUATION frame to trigger that as well - but it's very rare). (Section 5.1)\n3. PRIORITY frame with a length other than 5. (section 6.3)\nFrom our experience, the primitives are likely to exist in the decreasing order listed above.\nNote that based on the implementation of the library, other primitives (which are not defined by the RFC) might exist - meaning scenarios in which RST_STREAM is not supposed to be sent, but in the implementation it does. On the other hand - some RFC-defined primitives might not work, even though they are defined by the RFC (as some implementations are not fully complying with RFC). For example, some implementations we’ve seen discard the PRIORITY frame - and thus does not return RST_STREAM, and some implementations send GO_AWAY when receiving a WINDOW_UPDATE frame with increment of 0.\n\nThe vulnerability takes advantage of a design flaw in the HTTP/2 protocol - While HTTP/2 has a limit on the number of concurrently active streams per connection (which is usually 100, and is set by the parameter SETTINGS_MAX_CONCURRENT_STREAMS), the number of active streams is not counted correctly - when a stream is reset, it is immediately considered not active, and thus unaccounted for in the active streams counter. \nWhile the protocol does not count those streams as active, the server’s backend logic still processes and handles the requests that were canceled.\n\nThus, the attacker can exploit this vulnerability to cause the server to handle an unbounded number of concurrent streams from a client on the same connection. The exploitation is very simple: the client issues a request in a stream, and then sends the control frame that causes the server to send a RST_STREAM.\n\n### Attack Flow\nFor example, a possible attack scenario can be: \n1. Attacker opens an HTTP/2 connection to the server.\n2. Attacker sends HEADERS frame with END_STREAM flag on a new stream X.  \n3. Attacker sends WINDOW_UPDATE for stream X with flow-control window of 0.\n4. The server receives the WINDOW_UPDATE and immediately sends RST_STREAM for stream X to the client (+ decreases the active streams counter by 1).\n\nThe attacker can repeat steps 2+3 as rapidly as it is capable, since the active streams counter never exceeds 1 and the attacker does not need to wait for the response from the server.\nThis leads to resource exhaustion and distributed denial of service vulnerabilities with an impact of: CPU overload and/or memory exhaustion (implementation dependent)\n\n### Comparison to Rapid Reset\nThe vulnerability takes advantage of a design flow in the HTTP/2 protocol that was also used in the Rapid Reset vulnerability (CVE-2023-44487) which was exploited as a zero-day in the wild in August 2023 to October 2023, against multiple services and vendors.\nThe Rapid Reset vulnerability uses RST_STREAM frames sent from the client, in order to create an unbounded amount of concurrent streams - it was given a CVSS score of 7.5.\nRapid Reset was mostly mitigated by limiting the number/rate of RST_STREAM sent from the client, which does not mitigate the MadeYouReset attack - since it triggers the server to send a RST_STREAM.\n\n### Suggested Mitigations for MadeYouReset\nA quick and easy mitigation will be to limit the number/rate of RST_STREAMs sent from the server.\nIt is also possible to limit the number/rate of control frames sent by the client (e.g. WINDOW_UPDATE and PRIORITY), and treat protocol flow errors as a connection error.\n\nAs mentioned in our previous message, this is a protocol-level vulnerability that affects multiple vendors and implementations. Given its broad impact, it is the shared responsibility of all parties involved to handle the disclosure process carefully and coordinate mitigations effectively.\n\n\nIf you have any questions, we will be happy to clarify or schedule a Zoom call.\n\nGal, Anat and Yaniv.\n\n|                |                                                                 |\n|----------------|-----------------------------------------------------------------|\n| Package        | pkg:maven/io.netty/netty-codec-http2@4.1.110.Final              |\n| Affected range | <=4.1.123.Final                                                 |\n| Fixed version  | 4.1.124.Final                                                   |\n| CVSS Score     |                                                             8.2 |\n| CVSS Vector    | CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N |\n"
+              },
+              "properties": {
+                "affected_version": "<=4.1.123.Final",
+                "cvssV3": 8.2,
+                "cvssV3_severity": "HIGH",
+                "cvssV3_vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
+                "fixed_version": "4.1.124.Final",
+                "purls": [
+                  "pkg:maven/io.netty/netty-codec-http2@4.1.110.Final"
+                ],
+                "security-severity": "8.2",
+                "tags": [
+                  "HIGH"
+                ]
+              }
+            }
+          ],
+          "version": "1.17.1"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2024-2236",
+          "ruleIndex": 0,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2024-2236                                                                              \n  Severity        : LOW                                                                                        \n  Package         : pkg:deb/ubuntu/libgcrypt20@1.9.4-3ubuntu3?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                        \n  Fixed version   : not fixed                                                                                  \n  EPSS Score      : 0.002220                                                                                   \n  EPSS Percentile : 0.446750                                                                                   \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libgcrypt20/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2024-41996",
+          "ruleIndex": 1,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2024-41996                                                                            \n  Severity        : LOW                                                                                       \n  Package         : pkg:deb/ubuntu/openssl@3.0.2-0ubuntu1.20?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                       \n  Fixed version   : not fixed                                                                                 \n  EPSS Score      : 0.004340                                                                                  \n  EPSS Percentile : 0.620360                                                                                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libssl3/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/openssl.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/openssl.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/openssl.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/openssl.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/ssl/openssl.cnf"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2024-56433",
+          "ruleIndex": 2,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2024-56433                                                                              \n  Severity        : LOW                                                                                         \n  Package         : pkg:deb/ubuntu/shadow@1%3A4.8.1-2ubuntu2.2?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                         \n  Fixed version   : not fixed                                                                                   \n  EPSS Score      : 0.050740                                                                                    \n  EPSS Percentile : 0.892960                                                                                    \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/login/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/passwd/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.postrm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.preinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.prerm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.postrm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.preinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.prerm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/default/useradd"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/login.defs"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/chfn"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/chpasswd"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/chsh"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/login"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/newusers"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/passwd"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-0167",
+          "ruleIndex": 3,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-0167                                                                           \n  Severity        : LOW                                                                                     \n  Package         : pkg:deb/ubuntu/curl@7.81.0-1ubuntu1.21?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                     \n  Fixed version   : not fixed                                                                               \n  EPSS Score      : 0.001250                                                                                \n  EPSS Percentile : 0.324920                                                                                \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/curl/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libcurl4/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/curl.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/curl.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-58056",
+          "ruleIndex": 4,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-58056                                     \n  Severity        : LOW                                                \n  Package         : pkg:maven/io.netty/netty-codec-http@4.1.110.Final  \n  Affected range  : <4.1.125.Final                                     \n  Fixed version   : 4.1.125.Final                                      \n  EPSS Score      : 0.000280                                           \n  EPSS Percentile : 0.065210                                           \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/lib/liquibase-azure-deps-4.33.0.jar:io.netty:netty-codec-http"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-9086",
+          "ruleIndex": 5,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-9086                                                                           \n  Severity        : LOW                                                                                     \n  Package         : pkg:deb/ubuntu/curl@7.81.0-1ubuntu1.21?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                     \n  Fixed version   : not fixed                                                                               \n  EPSS Score      : 0.000730                                                                                \n  EPSS Percentile : 0.225100                                                                                \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/curl/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libcurl4/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/curl.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/curl.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-3219",
+          "ruleIndex": 6,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2022-3219                                                                            \n  Severity        : LOW                                                                                      \n  Package         : pkg:deb/ubuntu/gnupg2@2.2.27-3ubuntu2.4?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                      \n  Fixed version   : not fixed                                                                                \n  CVSS Score      : 3.3                                                                                      \n  CVSS Vector     : CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L                                             \n  EPSS Score      : 0.000120                                                                                 \n  EPSS Percentile : 0.013230                                                                                 \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/dirmngr/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gnupg-l10n/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gnupg-utils/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gnupg/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gpg-agent/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gpg-wks-client/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gpg-wks-server/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gpg/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gpgconf/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gpgsm/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gpgv/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/dirmngr.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/dirmngr.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/dirmngr.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/dirmngr.postrm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/dirmngr.preinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/dirmngr.prerm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gnupg-l10n.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gnupg-l10n.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gnupg-utils.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gnupg-utils.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gnupg.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gnupg.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-agent.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-agent.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-agent.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-agent.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-agent.postrm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-wks-client.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-wks-client.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-wks-server.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg-wks-server.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpg.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpgconf.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpgconf.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpgsm.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpgsm.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpgv.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/gpgv.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/X11/Xsession.d/90gpg-agent"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/logcheck/ignore.d.server/gpg-agent"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-29383",
+          "ruleIndex": 7,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2023-29383                                                                              \n  Severity        : LOW                                                                                         \n  Package         : pkg:deb/ubuntu/shadow@1%3A4.8.1-2ubuntu2.2?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                         \n  Fixed version   : not fixed                                                                                   \n  CVSS Score      : 3.3                                                                                         \n  CVSS Vector     : CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N                                                \n  EPSS Score      : 0.000250                                                                                    \n  EPSS Percentile : 0.056110                                                                                    \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/login/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/passwd/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.postrm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.preinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/login.prerm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.postrm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.preinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/passwd.prerm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/default/useradd"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/login.defs"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/chfn"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/chpasswd"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/chsh"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/login"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/newusers"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/passwd"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-8114",
+          "ruleIndex": 8,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-8114                                                                                 \n  Severity        : LOW                                                                                           \n  Package         : pkg:deb/ubuntu/libssh@0.9.6-2ubuntu0.22.04.4?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : <0.9.6-2ubuntu0.22.04.5                                                                       \n  Fixed version   : 0.9.6-2ubuntu0.22.04.5                                                                        \n  CVSS Score      : 4.7                                                                                           \n  CVSS Vector     : CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:H                                                  \n  EPSS Score      : 0.000180                                                                                      \n  EPSS Percentile : 0.032800                                                                                      \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libssh-4/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-27943",
+          "ruleIndex": 9,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2022-27943                                                                                 \n  Severity        : LOW                                                                                            \n  Package         : pkg:deb/ubuntu/gcc-12@12.3.0-1ubuntu1~22.04.2?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                            \n  Fixed version   : not fixed                                                                                      \n  CVSS Score      : 5.5                                                                                            \n  CVSS Vector     : CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H                                                   \n  EPSS Score      : 0.000500                                                                                       \n  EPSS Percentile : 0.152900                                                                                       \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/gcc-12-base/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-7008",
+          "ruleIndex": 10,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2023-7008                                                                              \n  Severity        : LOW                                                                                        \n  Package         : pkg:deb/ubuntu/systemd@249.11-0ubuntu3.16?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                        \n  Fixed version   : not fixed                                                                                  \n  CVSS Score      : 5.9                                                                                        \n  CVSS Vector     : CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N                                               \n  EPSS Score      : 0.004770                                                                                   \n  EPSS Percentile : 0.640900                                                                                   \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libsystemd0/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libudev1/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2016-2781",
+          "ruleIndex": 11,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2016-2781                                                                               \n  Severity        : LOW                                                                                         \n  Package         : pkg:deb/ubuntu/coreutils@8.32-4.1ubuntu1.2?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                         \n  Fixed version   : not fixed                                                                                   \n  CVSS Score      : 6.5                                                                                         \n  CVSS Vector     : CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N                                                \n  EPSS Score      : 0.000840                                                                                    \n  EPSS Percentile : 0.250520                                                                                    \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/coreutils/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/coreutils.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/coreutils.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/coreutils.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/coreutils.postrm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-50495",
+          "ruleIndex": 12,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2023-50495                                                                         \n  Severity        : LOW                                                                                    \n  Package         : pkg:deb/ubuntu/ncurses@6.3-2ubuntu0.1?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                    \n  Fixed version   : not fixed                                                                              \n  CVSS Score      : 6.5                                                                                    \n  CVSS Vector     : CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H                                           \n  EPSS Score      : 0.000520                                                                               \n  EPSS Percentile : 0.161700                                                                               \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libtinfo6/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/ncurses-base/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/ncurses-bin/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/ncurses-base.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/ncurses-base.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/ncurses-base.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/ncurses-bin.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/ncurses-bin.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/terminfo/README"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2017-11164",
+          "ruleIndex": 13,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2017-11164                                                                                   \n  Severity        : LOW                                                                                              \n  Package         : pkg:deb/ubuntu/pcre3@2%3A8.39-13ubuntu0.22.04.1?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                              \n  Fixed version   : not fixed                                                                                        \n  CVSS Score      : 7.5                                                                                              \n  CVSS Vector     : CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H                                                     \n  EPSS Score      : 0.002740                                                                                         \n  EPSS Percentile : 0.505880                                                                                         \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libpcre3/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-41409",
+          "ruleIndex": 14,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2022-41409                                                                         \n  Severity        : LOW                                                                                    \n  Package         : pkg:deb/ubuntu/pcre2@10.39-3ubuntu0.1?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                    \n  Fixed version   : not fixed                                                                              \n  CVSS Score      : 7.5                                                                                    \n  CVSS Vector     : CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H                                           \n  EPSS Score      : 0.000610                                                                               \n  EPSS Percentile : 0.189760                                                                               \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libpcre2-8-0/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-4899",
+          "ruleIndex": 15,
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "  Vulnerability   : CVE-2022-4899                                                                                \n  Severity        : LOW                                                                                          \n  Package         : pkg:deb/ubuntu/libzstd@1.4.8%2Bdfsg-3build1?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                          \n  Fixed version   : not fixed                                                                                    \n  CVSS Score      : 7.5                                                                                          \n  CVSS Vector     : CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H                                                 \n  EPSS Score      : 0.002050                                                                                     \n  EPSS Percentile : 0.427710                                                                                     \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libzstd1/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-45582",
+          "ruleIndex": 16,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-45582                                                                                     \n  Severity        : MEDIUM                                                                                             \n  Package         : pkg:deb/ubuntu/tar@1.34%2Bdfsg-1ubuntu0.1.22.04.2?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                                \n  Fixed version   : not fixed                                                                                          \n  EPSS Score      : 0.000810                                                                                           \n  EPSS Percentile : 0.244630                                                                                           \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/tar/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/tar.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/tar.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/tar.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/tar.prerm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-8941",
+          "ruleIndex": 17,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-8941                                                                         \n  Severity        : MEDIUM                                                                                \n  Package         : pkg:deb/ubuntu/pam@1.4.0-11ubuntu2.6?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                   \n  Fixed version   : not fixed                                                                             \n  EPSS Score      : 0.000260                                                                              \n  EPSS Percentile : 0.059940                                                                              \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libpam-modules-bin/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libpam-modules/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libpam-runtime/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/libpam0g/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-modules-bin.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-modules-bin.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-runtime.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-runtime.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-runtime.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-runtime.postinst"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-runtime.postrm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-runtime.prerm"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/libpam-runtime.templates"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.conf"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/pam.d/other"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/access.conf"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/faillock.conf"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/group.conf"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/limits.conf"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/namespace.conf"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/namespace.init"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/pam_env.conf"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/sepermit.conf"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/security/time.conf"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-58183",
+          "ruleIndex": 18,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-58183            \n  Severity        : MEDIUM                    \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000160                  \n  EPSS Percentile : 0.027520                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-47912",
+          "ruleIndex": 19,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-47912            \n  Severity        : MEDIUM                    \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000540                  \n  EPSS Percentile : 0.168260                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-58185",
+          "ruleIndex": 20,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-58185            \n  Severity        : MEDIUM                    \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000270                  \n  EPSS Percentile : 0.062300                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-58186",
+          "ruleIndex": 21,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-58186            \n  Severity        : MEDIUM                    \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000550                  \n  EPSS Percentile : 0.171240                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-58189",
+          "ruleIndex": 22,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-58189            \n  Severity        : MEDIUM                    \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000410                  \n  EPSS Percentile : 0.120090                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-61724",
+          "ruleIndex": 23,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-61724            \n  Severity        : MEDIUM                    \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000550                  \n  EPSS Percentile : 0.171240                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2024-47535",
+          "ruleIndex": 24,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2024-47535                                                       \n  Severity        : MEDIUM                                                               \n  Package         : pkg:maven/io.netty/netty-common@4.1.110.Final                        \n  Affected range  : <=4.1.114.Final                                                      \n  Fixed version   : 4.1.115.Final                                                        \n  CVSS Score      : 5.4                                                                  \n  CVSS Vector     : CVSS:4.0/AV:L/AC:L/AT:N/PR:L/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/E:P  \n  EPSS Score      : 0.000240                                                             \n  EPSS Percentile : 0.050020                                                             \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/lib/liquibase-azure-deps-4.33.0.jar:io.netty:netty-common"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-25193",
+          "ruleIndex": 25,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-25193                                 \n  Severity        : MEDIUM                                         \n  Package         : pkg:maven/io.netty/netty-common@4.1.110.Final  \n  Affected range  : <4.1.118.Final                                 \n  Fixed version   : 4.1.118.Final                                  \n  CVSS Score      : 5.5                                            \n  CVSS Vector     : CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H   \n  EPSS Score      : 0.000770                                       \n  EPSS Percentile : 0.234070                                       \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/lib/liquibase-azure-deps-4.33.0.jar:io.netty:netty-common"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-53864",
+          "ruleIndex": 26,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-53864                                \n  Severity        : MEDIUM                                        \n  Package         : pkg:maven/com.nimbusds/nimbus-jose-jwt@9.40   \n  Affected range  : >=9.38-rc1,<10.0.2                            \n  Fixed version   : 10.0.2                                        \n  CVSS Score      : 5.8                                           \n  CVSS Vector     : CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:L  \n  EPSS Score      : 0.000720                                      \n  EPSS Percentile : 0.221500                                      \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/lib/liquibase-azure-deps-4.33.0.jar:com.nimbusds:nimbus-jose-jwt"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2021-31879",
+          "ruleIndex": 27,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2021-31879                                                                         \n  Severity        : MEDIUM                                                                                 \n  Package         : pkg:deb/ubuntu/wget@1.21.2-2ubuntu1.1?os_distro=jammy&os_name=ubuntu&os_version=22.04  \n  Affected range  : >=0                                                                                    \n  Fixed version   : not fixed                                                                              \n  CVSS Score      : 6.1                                                                                    \n  CVSS Vector     : CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N                                           \n  EPSS Score      : 0.001130                                                                               \n  EPSS Percentile : 0.305780                                                                               \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/usr/share/doc/wget/copyright"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/wget.conffiles"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/wget.list"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/info/wget.md5sums"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/var/lib/dpkg/status"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/etc/wgetrc"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-58057",
+          "ruleIndex": 28,
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-58057                                                   \n  Severity        : MEDIUM                                                           \n  Package         : pkg:maven/io.netty/netty-codec@4.1.110.Final                     \n  Affected range  : <4.1.125.Final                                                   \n  Fixed version   : 4.1.125.Final                                                    \n  CVSS Score      : 6.9                                                              \n  CVSS Vector     : CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N  \n  EPSS Score      : 0.000340                                                         \n  EPSS Percentile : 0.091540                                                         \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/lib/liquibase-azure-deps-4.33.0.jar:io.netty:netty-codec"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2024-57699",
+          "ruleIndex": 29,
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "  Vulnerability   : CVE-2024-57699                                \n  Severity        : HIGH                                          \n  Package         : pkg:maven/net.minidev/json-smart@2.5.1        \n  Affected range  : >=2.5.0,<2.5.2                                \n  Fixed version   : 2.5.2                                         \n  CVSS Score      : 7.5                                           \n  CVSS Vector     : CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H  \n  EPSS Score      : 0.000290                                      \n  EPSS Percentile : 0.072610                                      \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/lib/liquibase-azure-deps-4.33.0.jar:net.minidev:json-smart"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-24970",
+          "ruleIndex": 30,
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-24970                                  \n  Severity        : HIGH                                            \n  Package         : pkg:maven/io.netty/netty-handler@4.1.110.Final  \n  Affected range  : >=4.1.91.Final,<=4.1.117.Final                  \n  Fixed version   : 4.1.118.Final                                   \n  CVSS Score      : 7.5                                             \n  CVSS Vector     : CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H    \n  EPSS Score      : 0.003590                                        \n  EPSS Percentile : 0.573510                                        \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/lib/liquibase-azure-deps-4.33.0.jar:io.netty:netty-handler"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-58187",
+          "ruleIndex": 31,
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-58187            \n  Severity        : HIGH                      \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.3          \n  Fixed version   : 1.25.3                    \n  EPSS Score      : 0.000170                  \n  EPSS Percentile : 0.028310                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-58188",
+          "ruleIndex": 32,
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-58188            \n  Severity        : HIGH                      \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000330                  \n  EPSS Percentile : 0.088160                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-61723",
+          "ruleIndex": 33,
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-61723            \n  Severity        : HIGH                      \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000750                  \n  EPSS Percentile : 0.229950                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-61725",
+          "ruleIndex": 34,
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-61725            \n  Severity        : HIGH                      \n  Package         : pkg:golang/stdlib@1.25.1  \n  Affected range  : >=1.25.0,<1.25.2          \n  Fixed version   : 1.25.2                    \n  EPSS Score      : 0.000750                  \n  EPSS Percentile : 0.229950                  \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/bin/lpm"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-55163",
+          "ruleIndex": 35,
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "  Vulnerability   : CVE-2025-55163                                                   \n  Severity        : HIGH                                                             \n  Package         : pkg:maven/io.netty/netty-codec-http2@4.1.110.Final               \n  Affected range  : <=4.1.123.Final                                                  \n  Fixed version   : 4.1.124.Final                                                    \n  CVSS Score      : 8.2                                                              \n  CVSS Vector     : CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N  \n  EPSS Score      : 0.000760                                                         \n  EPSS Percentile : 0.232380                                                         \n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/liquibase/lib/liquibase-azure-deps-4.33.0.jar:io.netty:netty-codec-http2"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
