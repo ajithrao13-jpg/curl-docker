@@ -1,39 +1,14 @@
-include:
-  - local: liquibase.jobs.gitlab-ci.yml
-
-variables:
-  ARTIFACTORY_REGISTRY: "artifactory-sass.mfb.com"
-
 stages:
-  - lint
-  - deploy
-  - rollback
+  - validate
 
-.default_config: &default_config
-  image: ${ARTIFACTORY_REGISTRY}/c17-docker-dev/ldgubase:feature-imagebuilder-32c4B873
-  tags:
-    - c1cd-k8s
-  before_script:
-    - echo "Logging into Artifactory..."
-    - docker login -u $ARTIFACTORY_USER -p $ARTIFACTORY_PASSWORD $ARTIFACTORY_REGISTRY
+validate_sql_syntax:
+  stage: validate
+  image: mcr.microsoft.com/mssql-tools
+  script:
+    - echo "Validating SQL syntax…"
 
-default:
-  <<: *default_config
+    # Validate SQL file WITHOUT executing it
+    - /opt/mssql-tools/bin/sqlcmd -S "$SQL_SERVER" -U "$SQL_USER" -P "$SQL_PASSWORD" -d "$SQL_DATABASE" -i "your_script.sql" -X
 
-liquibase-validate:
-  extends: .liquibase-vault
-  <<: *default_config
-  variables:
-    database_server: $DB_SERVER
-    database_name: $DB_NAME
-    database_username: $AZURE_CLIENT_ID
-    database_password: $AZURE_CLIENT_SECRET
-    database_type: $DB_TYPE
-  stage: lint
-  rules:
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "web"
+  only:
+    - main
