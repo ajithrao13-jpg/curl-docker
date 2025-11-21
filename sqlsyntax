@@ -1,0 +1,63 @@
+stages: [verify, compile, deploy]
+
+# 1) Generate SQL + basic validation (Liquibase)
+verify_sqlgen:
+  stage: verify
+  image: liquibase/liquibase:4.28
+  variables:
+    CHANGELOG: "changelog.xml"
+    JDBC_URL: "jdbc:sqlserver://${SERVER_FQDN}:1433;databaseName=${DB_NAME};encrypt=true;trustServerCertificate=false;authentication=ActiveDirectoryServicePrincipal"
+  artifacts:
+    when: always
+    paths:
+      - out.sql
+    expire_in: 1 week
+  script:
+    # Validate changelog
+    - liquibase --changelog-file="$CHANGELOG"
+                --url="$JDBC_URL"
+                --username="$AZURE_CLIENT_ID"
+                --password="$AZURE_CLIENT_SECRET"
+                validate
+
+    # Produce the SQL that would run
+    - liquibase --changelog-file="$CHANGELOG"
+                --url="$JDBC_URL"
+                --username="$AZURE_CLIENT_ID"
+                --password="$AZURE_CLIENT_SECRET"
+                update-sql > out.sql
+
+# 2) Ask Azure SQL to compile the SQL, but NOT execute it
+compile_noexec:
+  stage: compile
+  needs: ["verify_sqlgen"]
+  image: mcr.microsoft.com/mssql/sqlcmd:latest
+  variables:
+    SQLCMDLOGINTIMEOUT: "30"
+  script:
+    # Wrap with NOEXEC so SQL is parsed/compiled only
+    - printf "SET NOEXEC ON;\nGO\n" > preflight.sql
+    - cat out.sql >> preflight.sql
+    - printf "\nGO\nSET NOEXEC OFF;\nGO\n" >> preflight.sql
+
+    # Compile on Azure SQL using AAD Service Principal auth
+    - sqlcmd -S "${SERVER_FQDN}" -d "${DB_NAME}" \
+        --authentication-method "ActiveDirectoryServicePrincipal" \
+        -U "${AZURE_CLIENT_ID}" -P "${AZURE_CLIENT_SECRET}" \
+        -C -b -l 30 -i preflight.sql
+
+# 3) Real deploy (only if compile succeeded)
+deploy:
+  stage: deploy
+  needs: ["compile_noexec"]
+  image: liquibase/liquibase:4.28
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  variables:
+    JDBC_URL: "jdbc:sqlserver://${SERVER_FQDN}:1433;databaseName=${DB_NAME};encrypt=true;trustServerCertificate=false;authentication=ActiveDirectoryServicePrincipal"
+  script:
+    - liquibase --changelog-file="$CHANGELOG"
+                --url="$JDBC_URL"
+                --username="$AZURE_CLIENT_ID"
+                --password="$AZURE_CLIENT_SECRET"
+                update
