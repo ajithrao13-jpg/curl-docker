@@ -5,10 +5,10 @@ validate_sql_syntax:
   stage: validate
   image: mcr.microsoft.com/mssql-tools
   script:
-    - echo "Validating SQL syntax…"
+    - echo "Validating SQL syntax in all SQL files…"
 
-    # Validate SQL file WITHOUT executing it
-    - /opt/mssql-tools/bin/sqlcmd -S "$SQL_SERVER" -U "$SQL_USER" -P "$SQL_PASSWORD" -d "$SQL_DATABASE" -i "your_script.sql" -X
+    - for file in $(find . -name "*.sql"); do
+        echo "Checking $file";
+        /opt/mssql-tools/bin/sqlcmd -S "$SQL_SERVER" -U "$SQL_USER" -P "$SQL_PASSWORD" -d "$SQL_DATABASE" -i "$file" -X;
+      done
 
-  only:
-    - main
