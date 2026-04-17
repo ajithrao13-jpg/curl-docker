@@ -1,0 +1,5 @@
+# Install Microsoft ODBC Driver 18
+RUN curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/mssql-release.repo \
+    && yum remove -y unixODBC \
+    && ACCEPT_EULA=Y yum install -y msodbcsql18 \
+    && yum clean all
