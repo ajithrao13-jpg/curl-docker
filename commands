@@ -3,3 +3,14 @@ RUN curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos
     && yum remove -y unixODBC \
     && ACCEPT_EULA=Y yum install -y msodbcsql18 \
     && yum clean all
+
+0-------
+# -- Python dependencies (offline) 
+COPY sdist/ /tmp/sdist/
+RUN pip install --no-cache-dir --no-index \
+    --find-links=/tmp/sdist/ \
+    -r requirements.txt -r requirements-web.txt && \
+    rm -rf /tmp/sdist/
+
+# -- Application code ONLY
+COPY . .
