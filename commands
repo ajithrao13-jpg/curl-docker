@@ -14,3 +14,12 @@ RUN pip install --no-cache-dir --no-index \
 
 # -- Application code ONLY
 COPY . .
+
+
+
+RUN pip install --no-cache-dir \
+    --index-url https://pypi.org/simple/ \
+    --trusted-host pypi.org \
+    --trusted-host files.pythonhosted.org \
+    -r requirements.txt -r requirements-web.txt
+
