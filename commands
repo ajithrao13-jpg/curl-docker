@@ -18,3 +18,33 @@ sql-unit-tests:
       - test-results.xml
       - test-report.html
     expire_in: 30 days
+
+
+
+
+
+
+
+# Maven build output
+target/
+*.class
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Environment / secrets
+.env
+*.env.local
+
+# Maven wrapper (if not intentionally committed)
+.mvn/wrapper/maven-wrapper.jar
+
