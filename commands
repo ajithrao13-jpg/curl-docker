@@ -1,38 +1,102 @@
+Java:
+unitesting-framework-java/
+├── .gitlab-ci.yml                  ← Pipeline definition
+├── pom.xml                         ← Maven build & dependencies
+└── src/test/
+    ├── java/com/delta/
+    │   ├── DatabaseSetup.java      ← Creates DB, runs DDL scripts
+    │   ├── DbUtils.java            ← All SQL insert/query helpers
+    │   ├── BaseTest.java           ← Shared setup, cleans tables before each test
+    │   ├── TestUspDeltaFolders.java← 10 tests for USP_DELTA_FOLDERS
+    │   └── TestUspDeltaMaster.java ← 3 tests for USP_DELTA_MASTER
+    └── resources/sql/
+        ├── 01_create_tables.sql    ← Creates 5 tables
+        ├── 02_create_procedures.sql← Creates 2 stored procedures
+        └── 03_sample_data.sql      ← Cleans all tables before each test
+-----------
+The GitLab CI Pipeline Flow
+
+Developer pushes code to GitLab
+        ↓
+GitLab Runner picks up the job
+        ↓
+Pulls maven image (Java + Maven)
+        ↓
+Spins up SQL Server 2022 as a sidecar container
+        ↓
+mvn dependency:go-offline   ← downloads all dependencies
+        ↓
+mvn test                    ← runs all 13 tests
+  │
+  ├── DatabaseSetup connects to SQL Server
+  ├── Creates TestDB database
+  ├── Runs DDL scripts (tables + stored procedures)
+  └── Runs 13 JUnit tests
+        ↓
+mvn surefire-report:report-only   ← generates HTML report
+        ↓
+Artifacts saved to GitLab:
+  ├── target/surefire-reports/TEST-*.xml  ← visible in Tests tab
+  └── target/reports/surefire.html        ← downloadable HTML report
+        ↓
+SQL Server container destroyed
+
+----------------------------------------------------------------------------
+
+Python:
 unitesting-framework-main/
-├── docker-compose.yml          # Local web UI
-├── Dockerfile
-├── .gitlab-ci.yml
-├── webapp/
-│   ├── app.py                  # Flask backend
-│   └── templates/index.html    # Browser UI
+├── .gitlab-ci.yml                    ← Pipeline definition
+├── pytest.ini                        ← pytest configuration (test paths, verbosity)
+├── requirements.txt                  ← Python dependencies (pyodbc, pytest, pytest-html)
+│
 └── tests/
-    ├── conftest.py             # DB fixture + per-test cleanup
-    ├── setup_db.py             # Bootstrap TestDB
-    ├── test_sql_runner.py      # Auto-discovers .sql test cases
-    ├── helpers/sql_test_parser.py
+    ├── __init__.py                   ← Makes tests/ a Python package
+    ├── conftest.py                   ← Shared fixtures: db_conn, clean_tables
+    ├── setup_db.py                   ← Bootstrap: creates TestDB + runs DDL scripts
+    ├── test_sql_runner.py            ← pytest runner: discovers & executes SQL test cases
+    ├── helpers/
+    │   ├── __init__.py
+    │   └── sql_test_parser.py        ← Parses @@TEST / @@ASSERT / @@END_TEST markers
     └── sql/
-        ├── 01_create_tables.sql
-        ├── 02_create_procedures.sql
-        └── testcases/
-            ├── test_usp_delta_folders.sql   # 10 tests
-            └── test_usp_delta_master.sql    # 3 tests
+        ├── 01_create_tables.sql      ← Creates 5 tables (drop-safe, idempotent)
+        ├── 02_create_procedures.sql  ← Creates 2 stored procedures
+        └── testcases/                ← ADD YOUR TEST CASES HERE
+            ├── test_usp_delta_folders.sql   ← 10 test cases
+            └── test_usp_delta_master.sql    ← 3 test cases
 
 
 
--- @@TEST: TC04 - Duplicate staging rows are deduplicated
--- @@DESCRIPTION: 3 identical rows → 1 TARGET insert, rows_deduped=2
 
-INSERT INTO dbo.STAGING (ID) VALUES (1);
-INSERT INTO dbo.STAGING_FOLDERS (Staging_ID, Folder_Name, Is_Processed)
-VALUES (1,'FOLDER-A','N'),(1,'FOLDER-A','N'),(1,'FOLDER-A','N');
-
-EXEC dbo.USP_DELTA_FOLDERS;
-
--- @@ASSERT: TARGET_FOLDERS should have exactly 1 row
-SELECT CASE WHEN COUNT(*) = 1 THEN 1 ELSE 0 END FROM dbo.TARGET_FOLDERS;
-
--- @@ASSERT: rows_deduped should be 2
-SELECT CASE WHEN rows_deduped = 2 THEN 1 ELSE 0 END
-FROM dbo.SYS_DELTA_LOG ORDER BY log_id DESC OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
-
--- @@END_TEST
+Developer pushes code to GitLab
+        ↓
+GitLab Runner picks up the job
+        ↓
+Pulls custom Python image (Python 3.12 + ODBC Driver 18 + pip packages)
+  Image: registry.gitlab.com/mandtbank/mtb/cl7/test-automation/database-tests/sql-unit-test
+        ↓
+Spins up SQL Server 2022 as a sidecar service container
+  Image: registry.gitlab.com/mandtbank/mtb/cl7/test-automation/database-tests/mssql2022
+        ↓
+python3.12 tests/setup_db.py
+  │
+  ├── Polls SQL Server until ready (up to 30 retries × 5s)
+  ├── Creates TestDB database (IF NOT EXISTS)
+  ├── Executes 01_create_tables.sql  → 5 tables
+  └── Executes 02_create_procedures.sql → 2 stored procedures
+        ↓
+pytest tests/ --junitxml=test-results.xml --html=test-report.html
+  │
+  ├── sql_test_parser.py discovers all @@TEST blocks in testcases/*.sql
+  ├── test_sql_runner.py parametrizes 13 test cases
+  ├── clean_tables fixture truncates all tables before EACH test
+  ├── For each test case:
+  │     1. Run body SQL (INSERT setup data + EXEC stored procedure)
+  │     2. Run each @@ASSERT query (must return 1=PASS, 0=FAIL)
+  │     3. Collect failures → fail with combined message
+  └── Results written to XML + HTML
+        ↓
+Artifacts saved to GitLab:
+  ├── test-results.xml   ← visible in MR → Tests tab (pass/fail per test)
+  └── test-report.html   ← downloadable HTML report (30-day retention)
+        ↓
+SQL Server sidecar container destroyed
