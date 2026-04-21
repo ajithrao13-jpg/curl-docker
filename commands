@@ -1,50 +1,38 @@
-sql-unit-tests:
-  stage: test
-  image: <your-custom-python-image-from-jfrog>
-  services:
-    - name: <your-sql-server-image-from-jfrog>
-      alias: sqlserver
-      variables:
-        ACCEPT_EULA: "Y"
-        MSSQL_SA_PASSWORD: "Str0ngPass!2024"
-  script:
-    - python3.12 tests/setup_db.py
-    - pytest tests/ --tb=short --junitxml=test-results.xml --html=test-report.html --self-contained-html
-  artifacts:
-    when: always
-    reports:
-      junit: test-results.xml
-    paths:
-      - test-results.xml
-      - test-report.html
-    expire_in: 30 days
+unitesting-framework-main/
+├── docker-compose.yml          # Local web UI
+├── Dockerfile
+├── .gitlab-ci.yml
+├── webapp/
+│   ├── app.py                  # Flask backend
+│   └── templates/index.html    # Browser UI
+└── tests/
+    ├── conftest.py             # DB fixture + per-test cleanup
+    ├── setup_db.py             # Bootstrap TestDB
+    ├── test_sql_runner.py      # Auto-discovers .sql test cases
+    ├── helpers/sql_test_parser.py
+    └── sql/
+        ├── 01_create_tables.sql
+        ├── 02_create_procedures.sql
+        └── testcases/
+            ├── test_usp_delta_folders.sql   # 10 tests
+            └── test_usp_delta_master.sql    # 3 tests
 
 
 
+-- @@TEST: TC04 - Duplicate staging rows are deduplicated
+-- @@DESCRIPTION: 3 identical rows → 1 TARGET insert, rows_deduped=2
 
+INSERT INTO dbo.STAGING (ID) VALUES (1);
+INSERT INTO dbo.STAGING_FOLDERS (Staging_ID, Folder_Name, Is_Processed)
+VALUES (1,'FOLDER-A','N'),(1,'FOLDER-A','N'),(1,'FOLDER-A','N');
 
+EXEC dbo.USP_DELTA_FOLDERS;
 
+-- @@ASSERT: TARGET_FOLDERS should have exactly 1 row
+SELECT CASE WHEN COUNT(*) = 1 THEN 1 ELSE 0 END FROM dbo.TARGET_FOLDERS;
 
-# Maven build output
-target/
-*.class
+-- @@ASSERT: rows_deduped should be 2
+SELECT CASE WHEN rows_deduped = 2 THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG ORDER BY log_id DESC OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
 
-# IntelliJ IDEA
-.idea/
-*.iml
-*.iws
-*.ipr
-
-# VS Code
-.vscode/
-
-# macOS
-.DS_Store
-
-# Environment / secrets
-.env
-*.env.local
-
-# Maven wrapper (if not intentionally committed)
-.mvn/wrapper/maven-wrapper.jar
-
+-- @@END_TEST
