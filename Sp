@@ -1,0 +1,69 @@
+CREATE OR ALTER PROCEDURE usp_staging_housekeeping
+    @retention_days INT = 7
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @cutoff_date    DATE = CAST(DATEADD(DAY, -@retention_days, GETDATE()) AS DATE);
+    DECLARE @table_name     NVARCHAR(128);
+    DECLARE @batch_date_col NVARCHAR(128);
+    DECLARE @sql            NVARCHAR(500);
+    DECLARE @rows_deleted   INT;
+    DECLARE @total_tables   INT = 0;
+    DECLARE @failed_tables  INT = 0;
+
+    DECLARE staging_cursor CURSOR FOR
+        SELECT table_name, batch_date_col
+        FROM sys_staging_config
+        WHERE is_active = 1
+        ORDER BY table_name;
+
+    OPEN staging_cursor;
+    FETCH NEXT FROM staging_cursor INTO @table_name, @batch_date_col;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        SET @total_tables = @total_tables + 1;
+
+        BEGIN TRY
+            BEGIN TRANSACTION;
+
+            SET @sql = N'DELETE FROM ' + QUOTENAME(@table_name)
+                     + N' WHERE ' + QUOTENAME(@batch_date_col)
+                     + N' < @cutoff';
+
+            EXEC sp_executesql @sql, N'@cutoff DATE', @cutoff = @cutoff_date;
+            SET @rows_deleted = @@ROWCOUNT;
+
+            INSERT INTO sys_housekeeping_log 
+                (table_name, rows_deleted, status, cutoff_date)
+            VALUES 
+                (@table_name, @rows_deleted, 'SUCCESS', @cutoff_date);
+
+            COMMIT;
+        END TRY
+        BEGIN CATCH
+            IF @@TRANCOUNT > 0 ROLLBACK;
+            SET @failed_tables = @failed_tables + 1;
+
+            INSERT INTO sys_housekeeping_log 
+                (table_name, rows_deleted, status, error_message, cutoff_date)
+            VALUES 
+                (@table_name, 0, 'FAILED', ERROR_MESSAGE(), @cutoff_date);
+        END CATCH;
+
+        FETCH NEXT FROM staging_cursor INTO @table_name, @batch_date_col;
+    END;
+
+    CLOSE staging_cursor;
+    DEALLOCATE staging_cursor;
+
+    -- Return summary to Java application
+    SELECT
+        @total_tables                        AS total_tables,
+        (@total_tables - @failed_tables)     AS successful_tables,
+        @failed_tables                       AS failed_tables,
+        @cutoff_date                         AS cutoff_date,
+        CASE WHEN @failed_tables = 0 
+             THEN 'SUCCESS' ELSE 'PARTIAL_FAILURE' END AS overall_status;
+END;
