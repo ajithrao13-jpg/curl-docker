@@ -1,0 +1,20 @@
+As discussed, this is regarding the move to the Liquibase Enterprise version.
+
+We are currently using Liquibase Community version 5.0.1 in our pipeline. MTB is rolling out standardized Liquibase templates along with Enterprise support for teams that require Liquibase-based schema deployments. Since we already have a working Community-based implementation, there is currently a gap between our setup and the MTB standard pipeline.
+
+Our existing pipeline includes a few additional capabilities tailored to our needs:
+
+* SQL syntax check – runs before deployment to catch syntax issues in SQL files
+* Liquibase reporting – currently handled using dbdocs for deployment visibility
+* SQL unit testing (planned) – will be added soon using a Python framework with SQL-based test logic
+
+Given these customizations, we are not planning to adopt the DBE team’s Liquibase template as-is. Our pipeline is designed based on our requirements and would need alignment rather than replacement.
+
+For moving to the Enterprise version, we will need to:
+
+* Update to the appropriate Docker image provided by the DBE team
+* Leverage Liquibase office hours for any required guidance/support
+* Align on version compatibility — the DBE team is expected to release their image on version 4.33, so we may either need to wait for a 5.0.1-compatible image or consider downgrading
+
+For further details or coordination, would be the right point of contact.
+For Liquibase support, please reach out to 
