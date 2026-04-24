@@ -35,3 +35,6 @@ RUN pip install --no-cache-dir \
     --trusted-host artifactory-saas.mtb.com \
     -r requirements.txt -r requirements-web.txt
 
+# List certs in the Root store
+Get-ChildItem -Path Cert:\LocalMachine\Root | Where-Object { $_.Subject -like "*MTB*" -or $_.Subject -like "*M&T*" }
+
