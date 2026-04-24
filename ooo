@@ -38,3 +38,44 @@ RUN pip install --no-cache-dir \
 # List certs in the Root store
 Get-ChildItem -Path Cert:\LocalMachine\Root | Where-Object { $_.Subject -like "*MTB*" -or $_.Subject -like "*M&T*" }
 
+
+
+FROM artifactory-saas.mtb.com/mtb-docker-ga/mtb-ubi8-python312:latest
+
+ARG ARTIFACTORY_USER
+ARG ARTIFACTORY_TOKEN
+
+USER root
+
+# — Trust MTB's root CA bundle —
+COPY mtb-root-ca.pem /etc/pki/ca-trust/source/anchors/mtb-root-ca.crt
+RUN update-ca-trust extract
+
+ENV REQUESTS_CA_BUNDLE=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem \
+    SSL_CERT_FILE=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem \
+    PIP_CERT=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+
+# — Microsoft ODBC Driver 18 via MTB Artifactory mirror —
+RUN printf '%s\n' \
+    '[Artifactory]' \
+    'name=Artifactory' \
+    "baseurl=https://${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}@artifactory-saas.mtb.com/artifactory/rpm-packagesmicrosoftcomrhel-remote/9/prod/" \
+    'enabled=1' \
+    'gpgcheck=0' \
+    > /etc/yum.repos.d/artifactory.repo \
+ && ACCEPT_EULA=Y dnf install -y msodbcsql18 unixODBC-devel \
+ && dnf clean all \
+ && rm -f /etc/yum.repos.d/artifactory.repo
+
+# — Python dependencies —
+WORKDIR /app
+COPY requirements.txt requirements-web.txt ./
+RUN pip install --no-cache-dir \
+    --index-url "https://${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}@artifactory-saas.mtb.com/artifactory/api/pypi/mtb-pypi/simple" \
+    -r requirements.txt -r requirements-web.txt
+
+# — Application code —
+COPY . .
+
+EXPOSE 5000
+CMD ["python", "webapp/app.py"]
