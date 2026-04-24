@@ -25,3 +25,13 @@ COPY . .
 
 EXPOSE 5000
 CMD ["python", "webapp/app.py"]
+
+
+
+
+------------
+RUN pip install --no-cache-dir \
+    --index-url "https://${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}@artifactory-saas.mtb.com/artifactory/api/pypi/mtb-pypi/simple" \
+    --trusted-host artifactory-saas.mtb.com \
+    -r requirements.txt -r requirements-web.txt
+
