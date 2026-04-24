@@ -1,19 +1,19 @@
 FROM artifactory-saas.mtb.com/mtb-docker-ga/mtb-ubi8-python311:0.1.99
 
-# — Microsoft ODBC Driver 18 via MTB Artifactory mirror —
+ARG ARTIFACTORY_USER
 ARG ARTIFACTORY_TOKEN
+
+# — Microsoft ODBC Driver 18 via MTB Artifactory mirror —
 RUN printf '%s\n' \
-    '[mssql-release]' \
-    'name=MSSQL Release (MTB Artifactory mirror)' \
-    'baseurl=https://artifactory-saas.mtb.com/artifactory/rpm-packagesmicrosoftcomrhel-remote/8/prod/' \
+    '[Artifactory]' \
+    'name=Artifactory' \
+    "baseurl=https://${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}@artifactory-saas.mtb.com/artifactory/rpm-packagesmicrosoftcomrhel-remote/8/prod/" \
     'enabled=1' \
     'gpgcheck=0' \
-    "username=$(whoami)" \
-    "password=${ARTIFACTORY_TOKEN}" \
-    > /etc/yum.repos.d/mssql-release.repo \
+    > /etc/yum.repos.d/artifactory.repo \
  && ACCEPT_EULA=Y dnf install -y msodbcsql18 unixODBC-devel \
  && dnf clean all \
- && rm -f /etc/yum.repos.d/mssql-release.repo
+ && rm -f /etc/yum.repos.d/artifactory.repo
 
 # — Python dependencies —
 WORKDIR /app
