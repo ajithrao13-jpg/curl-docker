@@ -1,0 +1,5 @@
+# — System dependencies & Microsoft ODBC Driver 18 —
+RUN curl -fsSL https://packages.microsoft.com/config/rhel/8/prod.repo \
+        -o /etc/yum.repos.d/mssql-release.repo \
+ && ACCEPT_EULA=Y dnf install -y msodbcsql18 unixODBC-devel \
+ && dnf clean all
