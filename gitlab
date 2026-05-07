@@ -12,3 +12,15 @@ validate_sql_syntax:
         /opt/mssql-tools/bin/sqlcmd -S "$SQL_SERVER" -U "$SQL_USER" -P "$SQL_PASSWORD" -d "$SQL_DATABASE" -i "$file" -X;
       done
 
+Hi team,
+I’m looking to enable T-SQL static analysis on a GitLab project using the Generic Sonar Component. The codebase targets Azure SQL Database and consists of stored procedures, functions, views, and DDL stored as .sql files in Git, managed via Liquibase.
+Based on the component’s current configuration:
+	•	.tsql files are not picked up by the scanner.
+	•	.sql files are scanned, but routed to the PL/SQL analyzer rather than T-SQL.
+Since the project targets SQL Server / Azure SQL, I need .sql files analyzed by the T-SQL plugin. The PL/SQL ruleset doesn’t apply to our syntax and would produce false positives while missing T-SQL-specific issues (dynamic SQL via sp_executesql, SET NOCOUNT ON, WITH (NOLOCK), etc.).
+A few questions:
+	1.	Is the T-SQL analyzer enabled on the MTB SonarQube instance?
+	2.	What’s the recommended way to route .sql files to T-SQL for our project — a parameter on the Generic Sonar Component, a project-level override, or a change on the component side?
+	3.	If this requires a change to the component, what’s the process to request it?
+I raised this in the Grayskull Guild Teams channel recently but haven’t gotten a follow-up, so wanted to reach out directly.
+Thanks,
