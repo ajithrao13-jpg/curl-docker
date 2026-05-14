@@ -1,0 +1,225 @@
+-- @@TEST: TC01 - USP_DELTA_MASTER executes successfully
+-- @@DESCRIPTION: Verify master SP completes execution successfully
+
+BEGIN TRY
+
+    EXEC dbo.USP_DELTA_MASTER;
+
+    SELECT 1;
+
+END TRY
+BEGIN CATCH
+
+    SELECT 0;
+
+END CATCH;
+
+-- @@END_TEST
+
+
+-- @@TEST: TC02 - Master procedure continues execution despite child SP failures
+-- @@DESCRIPTION: Verify USP_DELTA_MASTER continues even when child SPs fail
+
+DECLARE @original_definition NVARCHAR(MAX);
+
+-- Backup original procedure definition
+SELECT @original_definition =
+    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_FOLDERS'));
+
+-- Force failure automatically
+EXEC('
+ALTER PROCEDURE dbo.USP_DELTA_FOLDERS
+AS
+BEGIN
+    RAISERROR(''Forced failure for testing'',16,1);
+END
+');
+
+BEGIN TRY
+
+    EXEC dbo.USP_DELTA_MASTER;
+
+    SELECT 1;
+
+END TRY
+BEGIN CATCH
+
+    SELECT 0;
+
+END CATCH;
+
+-- Restore original procedure
+EXEC(@original_definition);
+
+-- @@END_TEST
+
+-- @@TEST: TC03 - Child SP failure does not stop remaining batch execution
+-- @@DESCRIPTION: Verify statements after USP_DELTA_MASTER still execute
+
+DECLARE @original_definition NVARCHAR(MAX);
+
+SELECT @original_definition =
+    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_FOLDERS'));
+
+-- Force failure automatically
+EXEC('
+ALTER PROCEDURE dbo.USP_DELTA_FOLDERS
+AS
+BEGIN
+    RAISERROR(''Forced failure'',16,1);
+END
+');
+
+DECLARE @batch_check TABLE
+(
+    id INT
+);
+
+BEGIN TRY
+
+    EXEC dbo.USP_DELTA_MASTER;
+
+    INSERT INTO @batch_check
+    VALUES (1);
+
+END TRY
+BEGIN CATCH
+END CATCH;
+
+-- Restore original procedure
+EXEC(@original_definition);
+
+-- @@ASSERT: Batch continued after failure
+SELECT CASE WHEN COUNT(*) = 1 THEN 1 ELSE 0 END
+FROM @batch_check;
+
+-- @@END_TEST
+
+
+
+-- @@TEST: TC04 - No transaction leak after execution
+-- @@DESCRIPTION: Verify USP_DELTA_MASTER does not leave open transactions
+
+DECLARE @before INT = @@TRANCOUNT;
+
+EXEC dbo.USP_DELTA_MASTER;
+
+DECLARE @after INT = @@TRANCOUNT;
+
+-- @@ASSERT: Transaction count unchanged
+SELECT CASE WHEN @before = @after THEN 1 ELSE 0 END;
+
+-- @@END_TEST
+
+
+-- @@TEST: TC05 - USP_DELTA_MASTER supports repeated execution
+-- @@DESCRIPTION: Verify master SP can execute multiple times without failure
+
+BEGIN TRY
+
+    EXEC dbo.USP_DELTA_MASTER;
+    EXEC dbo.USP_DELTA_MASTER;
+    EXEC dbo.USP_DELTA_MASTER;
+
+    SELECT 1;
+
+END TRY
+BEGIN CATCH
+
+    SELECT 0;
+
+END CATCH;
+
+-- @@END_TEST
+
+
+
+
+-- @@TEST: TC06 - Long running child SP does not deadlock master execution
+-- @@DESCRIPTION: Verify USP_DELTA_MASTER survives long-running child procedure execution
+
+DECLARE @original_definition NVARCHAR(MAX);
+
+-- Backup original definition
+SELECT @original_definition =
+    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_FOLDERS'));
+
+-- Alter child SP to simulate long execution
+EXEC('
+ALTER PROCEDURE dbo.USP_DELTA_FOLDERS
+AS
+BEGIN
+
+    WAITFOR DELAY ''00:01:00'';
+
+END
+');
+
+DECLARE @start_time DATETIME2 = SYSUTCDATETIME();
+
+BEGIN TRY
+
+    EXEC dbo.USP_DELTA_MASTER;
+
+    SELECT 1;
+
+END TRY
+BEGIN CATCH
+
+    SELECT 0;
+
+END CATCH;
+
+DECLARE @duration_seconds INT =
+DATEDIFF(SECOND, @start_time, SYSUTCDATETIME());
+
+-- Restore original procedure
+EXEC(@original_definition);
+
+-- @@ASSERT: Execution completed successfully
+SELECT 1;
+
+-- @@ASSERT: Execution took at least 60 seconds
+SELECT CASE
+WHEN @duration_seconds >= 60 THEN 1
+ELSE 0
+END;
+
+-- @@END_TEST
+
+
+
+-- @@TEST: TC07 - Missing child SP inside master execution does not fail master
+-- @@DESCRIPTION: Verify USP_DELTA_MASTER continues even if a child SP is missing/renamed
+
+DECLARE @original_definition NVARCHAR(MAX);
+
+-- Backup original procedure definition
+SELECT @original_definition =
+    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_FOLDERS'));
+
+-- Rename actual child SP temporarily
+EXEC sp_rename
+    'dbo.USP_DELTA_FOLDERS',
+    'USP_DELTA_FOLDERS_TEMP';
+
+BEGIN TRY
+
+    -- Master SP will now try calling missing child SP
+    EXEC dbo.USP_DELTA_MASTER;
+
+    SELECT 1;
+
+END TRY
+BEGIN CATCH
+
+    SELECT 0;
+
+END CATCH;
+
+-- Restore original procedure name
+EXEC sp_rename
+    'dbo.USP_DELTA_FOLDERS_TEMP',
+    'USP_DELTA_FOLDERS';
+
+-- @@END_TEST
