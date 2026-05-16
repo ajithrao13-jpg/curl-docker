@@ -1,225 +1,228 @@
--- @@TEST: TC01 - USP_DELTA_MASTER executes successfully
--- @@DESCRIPTION: Verify master SP completes execution successfully
-
-BEGIN TRY
-
-    EXEC dbo.USP_DELTA_MASTER;
-
-    SELECT 1;
-
-END TRY
-BEGIN CATCH
-
-    SELECT 0;
-
-END CATCH;
-
--- @@END_TEST
+-- =============================================================
+-- test_usp_delta_master.sql
+-- SQL-driven unit tests for dbo.USP_DELTA_MASTER
+-- =============================================================
 
 
--- @@TEST: TC02 - Master procedure continues execution despite child SP failures
--- @@DESCRIPTION: Verify USP_DELTA_MASTER continues even when child SPs fail
+-- @@TEST: TC01 - Master executes without error against a clean DB
+-- @@DESCRIPTION: Smoke test. USP_DELTA_MASTER completes without throwing.
+--                Let exceptions propagate; the framework reports them.
 
-DECLARE @original_definition NVARCHAR(MAX);
+EXEC dbo.USP_DELTA_MASTER;
 
--- Backup original procedure definition
-SELECT @original_definition =
-    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_FOLDERS'));
-
--- Force failure automatically
-EXEC('
-ALTER PROCEDURE dbo.USP_DELTA_FOLDERS
-AS
-BEGIN
-    RAISERROR(''Forced failure for testing'',16,1);
-END
-');
-
-BEGIN TRY
-
-    EXEC dbo.USP_DELTA_MASTER;
-
-    SELECT 1;
-
-END TRY
-BEGIN CATCH
-
-    SELECT 0;
-
-END CATCH;
-
--- Restore original procedure
-EXEC(@original_definition);
-
--- @@END_TEST
-
--- @@TEST: TC03 - Child SP failure does not stop remaining batch execution
--- @@DESCRIPTION: Verify statements after USP_DELTA_MASTER still execute
-
-DECLARE @original_definition NVARCHAR(MAX);
-
-SELECT @original_definition =
-    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_FOLDERS'));
-
--- Force failure automatically
-EXEC('
-ALTER PROCEDURE dbo.USP_DELTA_FOLDERS
-AS
-BEGIN
-    RAISERROR(''Forced failure'',16,1);
-END
-');
-
-DECLARE @batch_check TABLE
-(
-    id INT
-);
-
-BEGIN TRY
-
-    EXEC dbo.USP_DELTA_MASTER;
-
-    INSERT INTO @batch_check
-    VALUES (1);
-
-END TRY
-BEGIN CATCH
-END CATCH;
-
--- Restore original procedure
-EXEC(@original_definition);
-
--- @@ASSERT: Batch continued after failure
-SELECT CASE WHEN COUNT(*) = 1 THEN 1 ELSE 0 END
-FROM @batch_check;
+-- @@ASSERT: Reached this point means EXEC did not throw
+SELECT 1;
 
 -- @@END_TEST
 
 
-
--- @@TEST: TC04 - No transaction leak after execution
--- @@DESCRIPTION: Verify USP_DELTA_MASTER does not leave open transactions
+-- @@TEST: TC02 - Master does not leak transactions
+-- @@DESCRIPTION: After USP_DELTA_MASTER returns, @@TRANCOUNT must match
+--                the pre-call value and the session must not be in a
+--                doomed transaction state.
 
 DECLARE @before INT = @@TRANCOUNT;
 
 EXEC dbo.USP_DELTA_MASTER;
 
-DECLARE @after INT = @@TRANCOUNT;
+DECLARE @after        INT = @@TRANCOUNT;
+DECLARE @xact_state   INT = XACT_STATE();
 
--- @@ASSERT: Transaction count unchanged
+-- @@ASSERT: TRANCOUNT unchanged
 SELECT CASE WHEN @before = @after THEN 1 ELSE 0 END;
 
--- @@END_TEST
-
-
--- @@TEST: TC05 - USP_DELTA_MASTER supports repeated execution
--- @@DESCRIPTION: Verify master SP can execute multiple times without failure
-
-BEGIN TRY
-
-    EXEC dbo.USP_DELTA_MASTER;
-    EXEC dbo.USP_DELTA_MASTER;
-    EXEC dbo.USP_DELTA_MASTER;
-
-    SELECT 1;
-
-END TRY
-BEGIN CATCH
-
-    SELECT 0;
-
-END CATCH;
+-- @@ASSERT: Session not in a doomed/uncommittable transaction
+SELECT CASE WHEN @xact_state = 0 THEN 1 ELSE 0 END;
 
 -- @@END_TEST
 
 
+-- @@TEST: TC03 - End-to-end: master delegates to USP_DELTA_FOLDERS
+-- @@DESCRIPTION: Seed STAGING + STAGING_FOLDERS, invoke master, and verify
+--                that the rows landed in TARGET_FOLDERS, that SYS_DELTA_LOG
+--                recorded a SUCCESS entry for FOLDERS, and that rows_upserted
+--                matches what was seeded.
 
+DECLARE @staging_id BIGINT;
+DECLARE @req_id     NVARCHAR(64) = CONCAT('UT-TC03-', CONVERT(varchar(36), NEWID()));
 
--- @@TEST: TC06 - Long running child SP does not deadlock master execution
--- @@DESCRIPTION: Verify USP_DELTA_MASTER survives long-running child procedure execution
+INSERT INTO dbo.STAGING (requestId) VALUES (@req_id);
+SET @staging_id = SCOPE_IDENTITY();
 
-DECLARE @original_definition NVARCHAR(MAX);
+INSERT INTO dbo.STAGING_FOLDERS
+    (folderIfUnmodifiedSince, folderFolderID, folderStateCode,
+     folderTypeCode, folderDescription, folderOwnerEntityId,
+     staging_id, Is_Processed)
+VALUES
+    (NULL, 'TC03-F001', 'ACTIVE', 'TYPE-A', 'Test Folder A', 'ENTITY-001', @staging_id, 'N'),
+    (NULL, 'TC03-F002', 'CLOSED', 'TYPE-B', 'Test Folder B', 'ENTITY-002', @staging_id, 'N');
 
--- Backup original definition
-SELECT @original_definition =
-    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_FOLDERS'));
+-- Capture log baseline so prior runs do not pollute assertions
+DECLARE @log_baseline BIGINT =
+    ISNULL((SELECT MAX(log_id) FROM dbo.SYS_DELTA_LOG), 0);
 
--- Alter child SP to simulate long execution
-EXEC('
-ALTER PROCEDURE dbo.USP_DELTA_FOLDERS
-AS
-BEGIN
+EXEC dbo.USP_DELTA_MASTER;
 
-    WAITFOR DELAY ''00:01:00'';
+-- @@ASSERT: Both seeded staging rows landed in TARGET_FOLDERS (scoped by staging_id)
+SELECT CASE WHEN COUNT(*) = 2 THEN 1 ELSE 0 END
+FROM dbo.TARGET_FOLDERS
+WHERE staging_id = @staging_id;
 
-END
-');
-
-DECLARE @start_time DATETIME2 = SYSUTCDATETIME();
-
-BEGIN TRY
-
-    EXEC dbo.USP_DELTA_MASTER;
-
-    SELECT 1;
-
-END TRY
-BEGIN CATCH
-
-    SELECT 0;
-
-END CATCH;
-
-DECLARE @duration_seconds INT =
-DATEDIFF(SECOND, @start_time, SYSUTCDATETIME());
-
--- Restore original procedure
-EXEC(@original_definition);
-
--- @@ASSERT: Execution completed successfully
-SELECT 1;
-
--- @@ASSERT: Execution took at least 60 seconds
+-- @@ASSERT: TARGET_FOLDERS contains the specific FolderIDs we seeded
 SELECT CASE
-WHEN @duration_seconds >= 60 THEN 1
-ELSE 0
+    WHEN EXISTS (SELECT 1 FROM dbo.TARGET_FOLDERS
+                 WHERE staging_id = @staging_id AND folderFolderID = 'TC03-F001')
+     AND EXISTS (SELECT 1 FROM dbo.TARGET_FOLDERS
+                 WHERE staging_id = @staging_id AND folderFolderID = 'TC03-F002')
+    THEN 1 ELSE 0
 END;
 
+-- @@ASSERT: Latest FOLDERS log entry from this run is SUCCESS
+SELECT CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG
+WHERE entity_name = 'FOLDERS'
+  AND log_id > @log_baseline
+ORDER BY log_id DESC
+OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+
+-- @@ASSERT: rows_upserted is 2
+SELECT CASE WHEN rows_upserted = 2 THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG
+WHERE entity_name = 'FOLDERS'
+  AND log_id > @log_baseline
+ORDER BY log_id DESC
+OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+
+-- @@ASSERT: Seeded staging rows are flipped to processed
+SELECT CASE WHEN COUNT(*) = 2 THEN 1 ELSE 0 END
+FROM dbo.STAGING_FOLDERS
+WHERE staging_id = @staging_id AND Is_Processed = 'Y';
+
 -- @@END_TEST
 
 
+-- @@TEST: TC04 - Empty staging produces clean no-op
+-- @@DESCRIPTION: With no staging rows for FOLDERS, master must still complete
+--                and log a SUCCESS entry with rows_upserted = 0.
 
--- @@TEST: TC07 - Missing child SP inside master execution does not fail master
--- @@DESCRIPTION: Verify USP_DELTA_MASTER continues even if a child SP is missing/renamed
+DECLARE @log_baseline BIGINT =
+    ISNULL((SELECT MAX(log_id) FROM dbo.SYS_DELTA_LOG), 0);
 
-DECLARE @original_definition NVARCHAR(MAX);
+EXEC dbo.USP_DELTA_MASTER;
 
--- Backup original procedure definition
-SELECT @original_definition =
-    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_FOLDERS'));
+-- @@ASSERT: FOLDERS logged SUCCESS for this run
+SELECT CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG
+WHERE entity_name = 'FOLDERS'
+  AND log_id > @log_baseline
+ORDER BY log_id DESC
+OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
 
--- Rename actual child SP temporarily
-EXEC sp_rename
-    'dbo.USP_DELTA_FOLDERS',
-    'USP_DELTA_FOLDERS_TEMP';
+-- @@ASSERT: rows_upserted is 0
+SELECT CASE WHEN ISNULL(rows_upserted, 0) = 0 THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG
+WHERE entity_name = 'FOLDERS'
+  AND log_id > @log_baseline
+ORDER BY log_id DESC
+OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+
+-- @@END_TEST
+
+
+-- @@TEST: TC05 - Idempotent: repeated execution does not duplicate target rows
+-- @@DESCRIPTION: Seed two staging rows, run master three times, and verify
+--                TARGET_FOLDERS still contains exactly 2 rows for this staging_id
+--                (not 6). Confirms the hash-registry / dedup path holds.
+
+DECLARE @staging_id BIGINT;
+DECLARE @req_id     NVARCHAR(64) = CONCAT('UT-TC05-', CONVERT(varchar(36), NEWID()));
+
+INSERT INTO dbo.STAGING (requestId) VALUES (@req_id);
+SET @staging_id = SCOPE_IDENTITY();
+
+INSERT INTO dbo.STAGING_FOLDERS
+    (folderIfUnmodifiedSince, folderFolderID, folderStateCode,
+     folderTypeCode, folderDescription, folderOwnerEntityId,
+     staging_id, Is_Processed)
+VALUES
+    (NULL, 'TC05-F001', 'ACTIVE', 'TYPE-A', 'Idem Folder A', 'ENTITY-001', @staging_id, 'N'),
+    (NULL, 'TC05-F002', 'ACTIVE', 'TYPE-A', 'Idem Folder B', 'ENTITY-002', @staging_id, 'N');
+
+EXEC dbo.USP_DELTA_MASTER;
+EXEC dbo.USP_DELTA_MASTER;
+EXEC dbo.USP_DELTA_MASTER;
+
+-- @@ASSERT: TARGET_FOLDERS still has exactly 2 rows for this staging_id
+SELECT CASE WHEN COUNT(*) = 2 THEN 1 ELSE 0 END
+FROM dbo.TARGET_FOLDERS
+WHERE staging_id = @staging_id;
+
+-- @@END_TEST
+
+
+-- @@TEST: TC06 - Broken child SP does not stop other children
+-- @@DESCRIPTION: Force USP_DELTA_ACCESSCONTROLGRANTS to throw, seed FOLDERS
+--                staging, then run master. FOLDERS must still land in target
+--                and log SUCCESS, proving the master continues past a failure.
+--                A test-side CATCH guarantees the original SP is restored even
+--                if the assertions blow up mid-test.
+
+DECLARE @original_definition NVARCHAR(MAX) =
+    OBJECT_DEFINITION(OBJECT_ID('dbo.USP_DELTA_ACCESSCONTROLGRANTS'));
+
+DECLARE @staging_id BIGINT;
+DECLARE @req_id     NVARCHAR(64) = CONCAT('UT-TC06-', CONVERT(varchar(36), NEWID()));
+DECLARE @log_baseline BIGINT =
+    ISNULL((SELECT MAX(log_id) FROM dbo.SYS_DELTA_LOG), 0);
 
 BEGIN TRY
 
-    -- Master SP will now try calling missing child SP
-    EXEC dbo.USP_DELTA_MASTER;
+    -- Replace child SP with one that always throws
+    EXEC('
+        ALTER PROCEDURE dbo.USP_DELTA_ACCESSCONTROLGRANTS
+        AS
+        BEGIN
+            THROW 50000, ''TC06 forced failure'', 1;
+        END
+    ');
 
-    SELECT 1;
+    -- Seed FOLDERS so we have something downstream to verify
+    INSERT INTO dbo.STAGING (requestId) VALUES (@req_id);
+    SET @staging_id = SCOPE_IDENTITY();
+
+    INSERT INTO dbo.STAGING_FOLDERS
+        (folderIfUnmodifiedSince, folderFolderID, folderStateCode,
+         folderTypeCode, folderDescription, folderOwnerEntityId,
+         staging_id, Is_Processed)
+    VALUES
+        (NULL, 'TC06-F001', 'ACTIVE', 'TYPE-A', 'After-failure Folder', 'ENTITY-001', @staging_id, 'N');
+
+    EXEC dbo.USP_DELTA_MASTER;
 
 END TRY
 BEGIN CATCH
-
-    SELECT 0;
-
+    -- Swallow so the restore below always runs
+    PRINT 'TC06 body raised: ' + ERROR_MESSAGE();
 END CATCH;
 
--- Restore original procedure name
-EXEC sp_rename
-    'dbo.USP_DELTA_FOLDERS_TEMP',
-    'USP_DELTA_FOLDERS';
+-- Always restore, even if the master or assertions threw
+IF @original_definition IS NOT NULL
+    EXEC(@original_definition);
+
+-- @@ASSERT: FOLDERS row reached TARGET_FOLDERS despite the broken child
+SELECT CASE WHEN COUNT(*) = 1 THEN 1 ELSE 0 END
+FROM dbo.TARGET_FOLDERS
+WHERE staging_id = @staging_id
+  AND folderFolderID = 'TC06-F001';
+
+-- @@ASSERT: FOLDERS logged SUCCESS for this run
+--           (Once master logs failures, also add an assertion that
+--            ACCESSCONTROLGRANTS has a FAILED row > @log_baseline.)
+SELECT CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG
+WHERE entity_name = 'FOLDERS'
+  AND log_id > @log_baseline
+ORDER BY log_id DESC
+OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
 
 -- @@END_TEST
