@@ -1,0 +1,11 @@
+# Verification: print key columns to confirm schema state
+cursor.execute("""
+    SELECT TABLE_NAME, COLUMN_NAME
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = 'dbo'
+      AND TABLE_NAME IN ('STAGING', 'STAGING_FOLDERS')
+      AND COLUMN_NAME IN ('ID', 'staging_id', 'Is_Processed', 'folderID')
+    ORDER BY TABLE_NAME, COLUMN_NAME
+""")
+for row in cursor.fetchall():
+    print(f"  schema check: {row.TABLE_NAME}.{row.COLUMN_NAME}")
