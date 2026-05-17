@@ -1,11 +1,18 @@
-# Verification: print key columns to confirm schema state
-cursor.execute("""
-    SELECT TABLE_NAME, COLUMN_NAME
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = 'dbo'
-      AND TABLE_NAME IN ('STAGING', 'STAGING_FOLDERS')
-      AND COLUMN_NAME IN ('ID', 'staging_id', 'Is_Processed', 'folderID')
-    ORDER BY TABLE_NAME, COLUMN_NAME
-""")
-for row in cursor.fetchall():
-    print(f"  schema check: {row.TABLE_NAME}.{row.COLUMN_NAME}")
+    # ---------------------------------------------------------------
+    # Schema verification: confirm all changesets actually applied
+    # ---------------------------------------------------------------
+    print("")
+    print("=" * 60)
+    print("SCHEMA VERIFICATION")
+    print("=" * 60)
+    cursor.execute("""
+        SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = 'dbo'
+          AND TABLE_NAME IN ('STAGING', 'STAGING_FOLDERS')
+        ORDER BY TABLE_NAME, ORDINAL_POSITION
+    """)
+    for row in cursor.fetchall():
+        print(f"  {row.TABLE_NAME:20s} {row.COLUMN_NAME:30s} {row.DATA_TYPE}")
+    print("=" * 60)
+    print("")
