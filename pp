@@ -299,3 +299,58 @@ class ReportingPurgeRepositoryTest {
                 .hasMessageContaining("DB connection failed");
     }
 }
+-----------
+// ADD THIS MOCK at the top with the other @Mock fields
+@Mock
+private ReportingPurgeService reportingPurgeService;
+
+// -------------------------------------------------------
+// ADD THESE 3 TEST METHODS at the bottom of the class
+// -------------------------------------------------------
+
+@Test
+@WithMockUser(authorities = {"CL7.Admin"})
+void triggerReportingPurge_success() throws Exception {
+    doNothing().when(reportingPurgeService).runPurge();
+
+    mockMvc.perform(post("/api/reporting_purge")
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("success"))
+            .andExpect(jsonPath("$.message")
+                    .value("Reporting purge job triggered"));
+
+    verify(reportingPurgeService).runPurge();
+}
+
+@Test
+@WithMockUser(authorities = {"CL7.User"})
+void triggerReportingPurge_success_asCL7User() throws Exception {
+    doNothing().when(reportingPurgeService).runPurge();
+
+    mockMvc.perform(post("/api/reporting_purge")
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("success"));
+
+    verify(reportingPurgeService).runPurge();
+}
+
+@Test
+@WithMockUser(authorities = {"CL7.Admin"})
+void triggerReportingPurge_failure() throws Exception {
+    doThrow(new IllegalStateException("Reporting purge failed with status: FAILED"))
+            .when(reportingPurgeService).runPurge();
+
+    mockMvc.perform(post("/api/reporting_purge")
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("failure"))
+            .andExpect(jsonPath("$.message")
+                    .value("Reporting purge failed with status: FAILED"));
+
+    verify(reportingPurgeService).runPurge();
+}
