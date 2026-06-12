@@ -354,3 +354,39 @@ void triggerReportingPurge_failure() throws Exception {
 
     verify(reportingPurgeService).runPurge();
 }
+
+
+---
+/**
+
+ * POST /api/reporting_purge
+
+ * Triggers the USP_REPORTING_PURGE stored procedure to truncate
+
+ * all reporting tables configured in dbo.SYS_PURGE_CONFIG (layer = 'reporting').
+
+ * Intended to be called by Automic as part of the pipeline workflow.
+
+ */
+
+
+
+/**
+
+ * Invokes the reporting purge stored procedure via the repository.
+
+ * Throws IllegalStateException if the procedure does not return 'SUCCESS'.
+
+ */
+
+
+
+/**
+
+ * Executes dbo.USP_REPORTING_PURGE via SimpleJdbcCall.
+
+ * Returns the OUTPUT parameter 'status' from the stored procedure
+
+ * ('SUCCESS' or 'FAILED').
+
+ */
