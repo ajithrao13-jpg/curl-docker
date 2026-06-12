@@ -59,3 +59,243 @@ BEGIN
 END;
 
 --rollback IF OBJECT_ID('dbo.USP_REPORTING_PURGE', 'P') IS NOT NULL DROP PROCEDURE dbo.USP_REPORTING_PURGE;
+--------------
+@Repository
+@Slf4j
+public class ReportingPurgeRepository {
+
+    private final SimpleJdbcCall simpleJdbcCall;
+
+    public ReportingPurgeRepository(JdbcTemplate jdbcTemplate) {
+        this.simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withSchemaName("dbo")
+                .withProcedureName("USP_REPORTING_PURGE")
+                .declareParameters(
+                    new SqlOutParameter("status", Types.NVARCHAR)
+                );
+    }
+
+    public String runReportingPurge() {
+        log.info("Executing dbo.USP_REPORTING_PURGE");
+        Map<String, Object> result = simpleJdbcCall
+            .execute(new MapSqlParameterSource());
+        return (String) result.get("status");
+    }
+}
+--------
+package com.mtb.cl7.databridge.service;
+
+import com.mtb.cl7.databridge.repository.ReportingPurgeRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class ReportingPurgeServiceTest {
+
+    @Mock
+    private ReportingPurgeRepository reportingPurgeRepository;
+
+    @InjectMocks
+    private ReportingPurgeService reportingPurgeService;
+
+    @Test
+    void runPurge_succeeds_whenStatusIsSuccess() {
+        when(reportingPurgeRepository.runReportingPurge())
+            .thenReturn("SUCCESS");
+
+        assertThatNoException()
+            .isThrownBy(() -> reportingPurgeService.runPurge());
+
+        verify(reportingPurgeRepository, times(1))
+            .runReportingPurge();
+    }
+
+    @Test
+    void runPurge_throws_whenStatusIsFailed() {
+        when(reportingPurgeRepository.runReportingPurge())
+            .thenReturn("FAILED");
+
+        assertThatThrownBy(() -> reportingPurgeService.runPurge())
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("FAILED");
+    }
+
+    @Test
+    void runPurge_throws_whenStatusIsNull() {
+        when(reportingPurgeRepository.runReportingPurge())
+            .thenReturn(null);
+
+        assertThatThrownBy(() -> reportingPurgeService.runPurge())
+            .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void runPurge_throws_whenRepositoryThrows() {
+        when(reportingPurgeRepository.runReportingPurge())
+            .thenThrow(new RuntimeException("DB connection failed"));
+
+        assertThatThrownBy(() -> reportingPurgeService.runPurge())
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("DB connection failed");
+    }
+}
+----------
+package com.mtb.cl7.databridge.controller;
+
+import com.mtb.cl7.databridge.service.ReportingPurgeService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(BlobIngestController.class)
+class BlobIngestControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private ReportingPurgeService reportingPurgeService;
+
+    @Test
+    @WithMockUser(authorities = "CL7.Admin")
+    void triggerReportingPurge_returns200_whenSuccessful() throws Exception {
+        doNothing().when(reportingPurgeService).runPurge();
+
+        mockMvc.perform(post("/api/reporting_purge"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("success"))
+            .andExpect(jsonPath("$.message")
+                .value("Reporting purge job triggered"));
+
+        verify(reportingPurgeService, times(1)).runPurge();
+    }
+
+    @Test
+    @WithMockUser(authorities = "CL7.User")
+    void triggerReportingPurge_returns200_forCL7User() throws Exception {
+        doNothing().when(reportingPurgeService).runPurge();
+
+        mockMvc.perform(post("/api/reporting_purge"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(authorities = "CL7.ReadOnly")
+    void triggerReportingPurge_returns403_forUnauthorizedRole() throws Exception {
+        mockMvc.perform(post("/api/reporting_purge"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void triggerReportingPurge_returns401_whenNotAuthenticated() throws Exception {
+        mockMvc.perform(post("/api/reporting_purge"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(authorities = "CL7.Admin")
+    void triggerReportingPurge_returns500_whenServiceThrows() throws Exception {
+        doThrow(new IllegalStateException("Reporting purge failed with status: FAILED"))
+            .when(reportingPurgeService).runPurge();
+
+        mockMvc.perform(post("/api/reporting_purge"))
+            .andExpect(status().isInternalServerError());
+    }
+}
+
+---------
+package com.mtb.cl7.databridge.repository;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+
+import java.lang.reflect.Field;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class ReportingPurgeRepositoryTest {
+
+    @Mock
+    private JdbcTemplate jdbcTemplate;
+
+    @Mock
+    private SimpleJdbcCall simpleJdbcCall;
+
+    private ReportingPurgeRepository repository;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        repository = new ReportingPurgeRepository(jdbcTemplate);
+        // inject mock SimpleJdbcCall via reflection
+        Field field = ReportingPurgeRepository.class
+                .getDeclaredField("simpleJdbcCall");
+        field.setAccessible(true);
+        field.set(repository, simpleJdbcCall);
+    }
+
+    @Test
+    void runReportingPurge_returnsSuccess_whenSpReturnsSuccess() {
+        when(simpleJdbcCall.execute(any(MapSqlParameterSource.class)))
+                .thenReturn(Map.of("status", "SUCCESS"));
+
+        String result = repository.runReportingPurge();
+
+        assertThat(result).isEqualTo("SUCCESS");
+        verify(simpleJdbcCall, times(1))
+                .execute(any(MapSqlParameterSource.class));
+    }
+
+    @Test
+    void runReportingPurge_returnsFailed_whenSpReturnsFailed() {
+        when(simpleJdbcCall.execute(any(MapSqlParameterSource.class)))
+                .thenReturn(Map.of("status", "FAILED"));
+
+        String result = repository.runReportingPurge();
+
+        assertThat(result).isEqualTo("FAILED");
+    }
+
+    @Test
+    void runReportingPurge_returnsNull_whenStatusKeyMissing() {
+        when(simpleJdbcCall.execute(any(MapSqlParameterSource.class)))
+                .thenReturn(Map.of());
+
+        String result = repository.runReportingPurge();
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void runReportingPurge_throwsRuntimeException_whenDbFails() {
+        when(simpleJdbcCall.execute(any(MapSqlParameterSource.class)))
+                .thenThrow(new RuntimeException("DB connection failed"));
+
+        assertThatThrownBy(() -> repository.runReportingPurge())
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("DB connection failed");
+    }
+}
