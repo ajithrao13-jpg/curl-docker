@@ -14,3 +14,11 @@ Azure SQL native capabilities provide partial support for PII protection. Dynami
 | **Dynamic Data Masking**            | Masks query results for non-privileged users | Actual data remains unchanged in the database                             |
 | **TDE**                             | Encrypts database, backups, and logs at rest | Does not hide data when queried                                           |
 | **Always Encrypted**                | Strong column-level encryption               | May require application/driver changes and can complicate ETL/delta logic |
+
+
+Email       → user_12345@example.com
+Phone       → 5550001234
+SSN/TIN     → 999-99-1234
+Name        → First12345 Last12345
+Account     → ACC12345
+DOB         → shifted/fake date
