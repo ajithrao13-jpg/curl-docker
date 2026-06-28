@@ -22,3 +22,11 @@ SSN/TIN     → 999-99-1234
 Name        → First12345 Last12345
 Account     → ACC12345
 DOB         → shifted/fake date
+
+DDM Masking Functions Available
+Function	Example Output	Use Case
+default()	XXXX or 0	Generic masking for any data type
+email()	aXXX@XXXX.com	Email address partial masking
+partial(prefix, pad, suffix)	aXXX.com	Custom show first/last N characters
+random(low, high)	73829	Numeric fields — random in range
+
