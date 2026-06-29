@@ -1,0 +1,256 @@
+# CL7 Data Masking and Obfuscation Analysis
+
+## 1. Objective
+
+PII should not be readily available in lower environments such as Dev and Cert. The goal of this analysis is to review Azure SQL out-of-the-box masking/obfuscation capabilities and determine whether they are sufficient for the CL7 data flow.
+
+The focus is to protect sensitive data before it is used in CL7 lower environments or transmitted downstream to Collate/Broadridge.
+
+---
+
+## 2. CL7 Data Flow
+
+CL7 receives upstream files through Azure Blob Storage. DataBridge picks up the files and loads the data into raw tables as-is, without transformation.
+
+After that, ETL picks records from raw tables, applies mapping/transformation logic, and loads transformed data into staging tables. Staging and target tables are based on the Collate API entity structure and generally have the same fields.
+
+ETL then triggers stored procedures to identify delta records using `HASHBYTES` and the `hash_registry` table. New or updated records are loaded into target tables.
+
+DataConnect picks records from target tables and sends them to Collate through PUT/PATCH API requests. Some data may also be sent as files.
+
+CL7 also receives data views as files from Blob. Some OOTB data views are loaded into reporting tables, while other data views may need transformation before being sent downstream.
+
+---
+
+## 3. Key PII Risk Areas
+
+PII may exist in the following areas:
+
+| Component                | PII Risk                                   |
+| ------------------------ | ------------------------------------------ |
+| Blob upstream files      | Real PII may exist before CL7 processing   |
+| DataBridge               | Reads and loads files into raw tables      |
+| Raw tables               | Data is loaded as-is from source files     |
+| ETL                      | Carries/transforms PII from raw to staging |
+| Staging tables           | May contain transformed PII                |
+| Target tables            | May contain delta records with PII         |
+| DataConnect              | Builds API/file payloads                   |
+| Collate API / Broadridge | Receives data from CL7                     |
+| Reporting tables         | May contain PII from data views            |
+
+---
+
+## 4. Terminology
+
+**Obfuscation** is a broad term for changing data so real sensitive values are not exposed.
+
+**Data masking** is one method of obfuscation. It usually hides part of the value, such as showing only the last four digits.
+
+**Dynamic Data Masking** is query-time masking. It hides values from non-privileged users, but it does not physically change the stored data.
+
+**Permanent obfuscation** means replacing real PII with fake, tokenized, hashed, or format-preserved values.
+
+---
+
+## 5. Azure SQL OOTB Capabilities
+
+| Azure SQL Feature               | How It Helps                                 | Limitation                                                     |
+| ------------------------------- | -------------------------------------------- | -------------------------------------------------------------- |
+| Data Discovery & Classification | Helps identify and label sensitive columns   | Does not mask or change data                                   |
+| Dynamic Data Masking            | Masks query results for non-privileged users | Real data remains stored underneath                            |
+| Transparent Data Encryption     | Protects database, backups, and logs at rest | Does not hide data when queried                                |
+| Always Encrypted                | Strong column-level encryption               | May require application changes and can impact ETL/query logic |
+| Row-Level Security              | Restricts which rows users can see           | Not a masking/obfuscation solution                             |
+
+---
+
+## 6. Dynamic Data Masking Behavior
+
+If a managed identity or user has `UNMASK` permission, it can see the real value.
+
+Example:
+
+Raw email value:
+
+`aadi@mtb.com`
+
+If ETL has `UNMASK` permission:
+
+`RAW → aadi@mtb.com`
+`STAGING → aadi@mtb.com`
+
+If ETL does not have `UNMASK` permission:
+
+`RAW → axxx@xxx.com`
+`STAGING → axxx@xxx.com`
+
+In this case, ETL copies the masked value into staging.
+
+This can help as a safety layer, but it is not a full obfuscation solution because the original value still exists in raw tables.
+
+---
+
+## 7. Limitations of Dynamic Data Masking
+
+Dynamic Data Masking should not be treated as the final solution for CL7 lower-environment obfuscation.
+
+Limitations:
+
+* It does not physically replace the stored data.
+* Admins, DBAs, `db_owner`, or users with `UNMASK` can still see real values.
+* It does not protect files in Azure Blob.
+* It does not automatically protect API payloads or output files.
+* Partial masked values may not pass Collate/Broadridge format validations.
+* It may not be sufficient for business testing where realistic fake values are needed.
+
+Example issue:
+
+`john.smith@gmail.com → jXXX@XXXX.com`
+
+This hides the value, but it may not behave like a real email for downstream validation or testing.
+
+---
+
+## 8. Permanent Obfuscation Requirement
+
+For lower environments, CL7 may need permanent obfuscation instead of only query-time masking.
+
+Permanent obfuscation means replacing real PII with fake or protected values.
+
+Example:
+
+Real data:
+
+`Name: John Smith`
+`Email: john.smith@gmail.com`
+
+Obfuscated data:
+
+`Name: Jack Bruce`
+`Email: jack.bruce@test.com`
+
+This is stronger than dynamic masking because the real value is replaced before it is used downstream.
+
+---
+
+## 9. Possible Implementation Options
+
+### Option 1: Obfuscate before files land in CL7 Blob
+
+`Obfuscate data → Blob files → CL7 → Collate`
+
+This is ideal, but it may not be possible from the CL7 side because the transmission team directly lands files into CL7 Blob.
+
+---
+
+### Option 2: Obfuscate only before sending to Collate
+
+`Blob files → CL7 → Obfuscate data → Collate`
+
+This protects Collate/Broadridge, but it is weaker for CL7 lower environments because real PII may already exist in raw, staging, target, and reporting tables.
+
+---
+
+### Option 3: Obfuscate before loading raw tables
+
+`Blob files → DataBridge obfuscation step → Raw tables → Staging → Target → Collate`
+
+This is the recommended approach if custom implementation is needed.
+
+Steps:
+
+1. DataBridge reads the file from Blob.
+2. DataBridge applies obfuscation rules for PII fields.
+3. Obfuscated values are inserted into raw tables.
+4. Existing ETL, delta, DataConnect, and Collate flow continues as usual.
+
+This prevents real PII from entering CL7 raw, staging, target, and downstream API/file payloads.
+
+---
+
+### Option 4: Obfuscate after raw table load
+
+`Raw table loaded → Run obfuscation stored procedure → Trigger ETL`
+
+This is a fallback option.
+
+Pros:
+
+* Less Java code change.
+* Can be implemented at the database layer.
+* ETL continues with obfuscated values.
+
+Cons:
+
+* Real PII exists temporarily in raw tables.
+* Stored procedure logic may not generate realistic fake data as easily as Java.
+* Must ensure ETL does not run until obfuscation completes successfully.
+
+Example deterministic fake values:
+
+`Email → user_12345@example.com`
+`Phone → 5550001234`
+`SSN/TIN → 999-99-1234`
+`Name → First12345 Last12345`
+`Account → ACC12345`
+`DOB → shifted/fake date`
+
+---
+
+## 10. Important Design Requirement: Deterministic Obfuscation
+
+Obfuscation should be deterministic.
+
+That means the same source record/key should generate the same fake value every time.
+
+Bad example:
+
+`John Smith today → user_123@example.com`
+`John Smith tomorrow → user_789@example.com`
+
+Good example:
+
+`John Smith every run → user_123@example.com`
+
+This is important because CL7 uses `HASHBYTES` and `hash_registry` for delta detection. If fake values change randomly every run, unchanged records may appear as updated records.
+
+---
+
+## 11. Recommended Approach
+
+Azure SQL native capabilities provide partial support for PII protection. Dynamic Data Masking can hide sensitive values during query access, Data Discovery & Classification can help identify PII fields, and TDE protects data at rest.
+
+However, these features do not fully satisfy lower-environment obfuscation requirements because Dynamic Data Masking does not physically change the stored data, and privileged users may still access unmasked values.
+
+Therefore, if Delphix is not available within the timeline, CL7 should implement a custom obfuscation routine in the DataBridge or database layer to permanently replace sensitive values before the data is used in lower environments or transmitted downstream to Collate.
+
+Preferred order:
+
+1. Delphix, if available.
+2. DataBridge/Java obfuscation before raw table insert.
+3. Obfuscation stored procedure immediately after raw load and before ETL.
+4. Dynamic Data Masking only as a supporting safety control.
+
+---
+
+## 12. Open Questions
+
+1. Do all upstream systems send PII data into Dev/Cert?
+2. Does the transmission team send the same upstream files into Dev, Cert, and Prod Blob locations?
+3. Does testing in lower environments require PII-like values, or can fully fake values be used?
+4. Do we have a complete list of PII fields and their upstream file names?
+5. Do we need an automated process to detect sensitive fields?
+6. Is masking or obfuscation currently applied in STOC?
+7. Do transformations or downstream systems require PII values?
+8. Do data views received from Collate/Broadridge contain PII?
+9. Can reporting work without real PII?
+10. How do we validate reporting output after PII is obfuscated?
+11. Can obfuscation break stored procedures, transformations, or delta logic?
+12. Does Broadridge allow obfuscated values in API requests and files for non-prod testing?
+13. What should happen if obfuscation fails? Should ETL/DataConnect be blocked?
+
+---
+
+## 13. Final Comment
+
+Azure SQL OOTB features are useful supporting controls, but they are not enough by themselves for full CL7 lower-environment obfuscation. CL7 needs deterministic permanent obfuscation if real PII should not be stored in Dev/Cert or sent downstream. The strongest custom approach is to obfuscate before raw table load. If that is not feasible immediately, a post-raw-load obfuscation stored procedure can be used as a fallback with strict controls.
