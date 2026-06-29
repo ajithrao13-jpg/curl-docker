@@ -30,3 +30,11 @@ email()	aXXX@XXXX.com	Email address partial masking
 partial(prefix, pad, suffix)	aXXX.com	Custom show first/last N characters
 random(low, high)	73829	Numeric fields — random in range
 
+Obfuscation is a broad term for changing data so real sensitive values are not exposed.
+
+Data masking is one method of obfuscation. It usually hides part of the value, such as showing only the last four digits.
+
+Dynamic Data Masking is query-time masking. It hides values from non-privileged users, but it does not physically change the stored data.
+
+Permanent obfuscation means replacing real PII with fake, tokenized, hashed, or format-preserved values.
+
