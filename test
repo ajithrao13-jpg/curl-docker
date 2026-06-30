@@ -1,0 +1,1093 @@
+# SQL Unit Testing Framework — Full Technical Documentation
+
+**Project:** sql-unit-testingrepo  
+**Database:** Microsoft SQL Server 2022  
+**Test Runner:** pytest 8.3.5  
+**Total Test Cases:** 25 (21 × USP_DELTA_FOLDERS, 4 × USP_DELTA_MASTER)
+
+---
+
+## Table of Contents
+
+1. [Architecture Overview](#1-architecture-overview)
+2. [Database Bootstrap — setup_db.py](#2-database-bootstrap--setup_dbpy)
+3. [pytest Configuration — pytest.ini](#3-pytest-configuration--pytestini)
+4. [Shared Fixtures — conftest.py](#4-shared-fixtures--conftestpy)
+5. [SQL Test Parser — sql_test_parser.py](#5-sql-test-parser--sql_test_parserpy)
+6. [Test Runner — test_sql_runner.py](#6-test-runner--test_sql_runnerpy)
+7. [Stored Procedures Under Test](#7-stored-procedures-under-test)
+8. [Test Case Reference — USP_DELTA_FOLDERS](#8-test-case-reference--usp_delta_folders)
+9. [Test Case Reference — USP_DELTA_MASTER](#9-test-case-reference--usp_delta_master)
+10. [How to Add a New Test Case](#10-how-to-add-a-new-test-case)
+11. [Assertion Contract](#11-assertion-contract)
+12. [Failure Message Format](#12-failure-message-format)
+13. [GitLab CI Pipeline](#13-gitlab-ci-pipeline)
+14. [Environment Variables Reference](#14-environment-variables-reference)
+
+---
+
+## 1. Architecture Overview
+
+```
+tests/sql/testcases/*.sql
+        │
+        │  parsed at pytest collection time
+        ▼
+tests/helpers/sql_test_parser.py   ←  SqlTestCase + SqlAssertion dataclasses
+        │
+        │  list[SqlTestCase] passed to
+        ▼
+tests/test_sql_runner.py           ←  @pytest.mark.parametrize generates 1 test per SQL case
+        │
+        │  uses
+        ├──► tests/conftest.py      ←  db_conn (session) + clean_tables (per-test autouse)
+        │
+        │  executes body SQL + assertions via pyodbc against
+        ▼
+SQL Server 2022 (Docker / CI service)
+        │
+        ├── TestDB.dbo.STAGING
+        ├── TestDB.dbo.STAGING_FOLDERS
+        ├── TestDB.dbo.TARGET_FOLDERS
+        ├── TestDB.dbo.HASH_REGISTRY
+        └── TestDB.dbo.SYS_DELTA_LOG
+```
+
+**Key design principle:** Test authors write only SQL. Python is responsible for discovery,
+execution, and reporting — no Python changes are needed to add a new test.
+
+---
+
+## 2. Database Bootstrap — `setup_db.py`
+
+**File:** `tests/setup_db.py`  
+**Invoked by:** `.gitlab-ci.yml` (`python tests/setup_db.py`) and developers locally.
+
+### What it does
+
+| Step | Detail |
+|------|--------|
+| 1. Poll for SQL Server | Retries up to 30 times with 5-second gaps using `MASTER_CONN_STR` |
+| 2. Create test database | `IF NOT EXISTS … CREATE DATABASE [TestDB]` executed against `master` |
+| 3. Run DDL scripts | Reads every `*.sql` file in `tests/sql/` in **sorted filename order** |
+
+### DDL execution order
+
+```
+tests/sql/01_create_tables.sql       →  drops and recreates all 5 tables
+tests/sql/02_create_procedures.sql   →  drops and recreates both stored procedures
+```
+
+Scripts are sorted alphabetically, so the `01_` / `02_` prefix controls execution order.
+`GO` batch separators inside each file are handled by `split_go_batches()`.
+
+### Connection strings
+
+Two connection strings are used:
+
+```
+MASTER_CONN_STR  → SERVER=<host>,<port>; DATABASE=master   (used for DB creation + readiness poll)
+TEST_CONN_STR    → SERVER=<host>,<port>; DATABASE=TestDB   (used for DDL execution)
+```
+
+Both use `TrustServerCertificate=yes` so self-signed dev certificates are accepted.
+
+### Key function: `wait_for_sql_server(retries=30, delay=5)`
+
+Polls `MASTER_CONN_STR` until a connection succeeds or all retries are exhausted.
+Exits the process with code 1 if SQL Server never becomes available.
+
+---
+
+## 3. pytest Configuration — `pytest.ini`
+
+**File:** `pytest.ini` (repository root)
+
+```ini
+[pytest]
+testpaths = tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+addopts = -v --tb=short
+```
+
+| Setting | Effect |
+|---------|--------|
+| `testpaths = tests` | pytest only searches the `tests/` directory |
+| `python_files = test_*.py` | Only files matching `test_*.py` are collected |
+| `python_classes = Test*` | Only classes starting with `Test` are collected |
+| `python_functions = test_*` | Only functions starting with `test_` are collected |
+| `addopts = -v --tb=short` | Verbose output + short tracebacks on every run by default |
+
+The SQL-driven tests in `test_sql_runner.py` are collected through the standard
+`test_*` function naming convention (`test_sql_case`).
+
+---
+
+## 4. Shared Fixtures — `conftest.py`
+
+**File:** `tests/conftest.py`
+
+### `db_conn` — session-scoped database connection
+
+```python
+@pytest.fixture(scope="session")
+def db_conn():
+    conn = pyodbc.connect(CONNECTION_STRING, autocommit=True)
+    yield conn
+    conn.close()
+```
+
+**Scope:** `session` — one connection is opened for the entire pytest run and reused
+by every test. This avoids the overhead of reconnecting for each test case.
+
+**Why `autocommit=True`:**  
+The stored procedures use explicit `BEGIN TRANSACTION / COMMIT / ROLLBACK` internally.
+If the test session held an outer transaction, these would become nested transactions,
+which changes T-SQL locking behaviour. `autocommit=True` keeps each SP's transaction
+independent and matches production behaviour.
+
+### `clean_tables` — per-test table reset
+
+```python
+@pytest.fixture(autouse=True)
+def clean_tables(db_conn):
+    cursor = db_conn.cursor()
+    cursor.execute("DELETE FROM dbo.STAGING_FOLDERS")
+    cursor.execute("DELETE FROM dbo.STAGING")
+    cursor.execute("DELETE FROM dbo.TARGET_FOLDERS")
+    cursor.execute("DELETE FROM dbo.HASH_REGISTRY")
+    cursor.execute("DELETE FROM dbo.SYS_DELTA_LOG")
+    cursor.close()
+    yield
+```
+
+**Scope:** `function` — runs before **every single test**, including parametrized ones.  
+**`autouse=True`** — applied automatically; no test needs to request it explicitly.  
+**Deletion order** — child tables are deleted before parent tables to satisfy FK constraints:
+`STAGING_FOLDERS` (references `STAGING`) is deleted before `STAGING`.
+
+---
+
+## 5. SQL Test Parser — `sql_test_parser.py`
+
+**File:** `tests/helpers/sql_test_parser.py`
+
+### Responsibility
+
+Reads `*.sql` files from `tests/sql/testcases/` and converts each `@@TEST` block into a
+`SqlTestCase` Python object that the test runner can execute.
+
+### Data model
+
+```python
+@dataclass
+class SqlAssertion:
+    description: str   # text after @@ASSERT:
+    sql: str           # the SELECT statement that follows
+
+@dataclass
+class SqlTestCase:
+    file_name:   str              # e.g. "test_usp_delta_folders.sql"
+    name:        str              # e.g. "TC02 - Single new row inserted to target"
+    description: str              # from @@DESCRIPTION: (empty string if omitted)
+    body_sql:    str              # setup INSERT + EXEC between @@TEST and first @@ASSERT
+    assertions:  List[SqlAssertion]
+
+    @property
+    def full_id(self) -> str:
+        # e.g. "test_usp_delta_folders__TC02_-_Single_new_row_inserted_to_target"
+        # Used as the pytest parametrize ID shown in test output
+```
+
+### Parsing algorithm
+
+1. **Find all `@@TEST` blocks** using a `re.DOTALL` regex that matches everything between
+   `-- @@TEST: <name>` and `-- @@END_TEST`.
+2. **Extract the optional description** from `-- @@DESCRIPTION: <text>`.
+3. **Split body from assertions** at the first `-- @@ASSERT:` marker. Everything before
+   it is the body SQL (setup + EXEC). Everything after is assertion SQL.
+4. **Parse each assertion** by splitting on `-- @@ASSERT:` markers, taking the first line
+   as the description and the remainder as the SQL.
+
+### Public API
+
+```python
+# Discover all test cases in a directory
+cases = discover_sql_test_cases("tests/sql/testcases/")
+
+# Parse a single file
+cases = parse_sql_test_file("tests/sql/testcases/test_usp_delta_folders.sql")
+```
+
+### SQL file format
+
+```sql
+-- @@TEST: TC01 - Short descriptive name
+-- @@DESCRIPTION: Optional longer explanation
+
+-- Setup SQL: INSERT statements, DECLARE variables
+INSERT INTO dbo.STAGING DEFAULT VALUES;
+
+-- Call the stored procedure
+EXEC dbo.USP_DELTA_FOLDERS;
+
+-- @@ASSERT: Human-readable description of the check
+SELECT CASE WHEN COUNT(*) = 1 THEN 1 ELSE 0 END
+FROM dbo.TARGET_FOLDERS;
+
+-- @@ASSERT: Another independent check
+SELECT CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG ORDER BY log_id DESC OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+
+-- @@END_TEST
+```
+
+---
+
+## 6. Test Runner — `test_sql_runner.py`
+
+**File:** `tests/test_sql_runner.py`
+
+### Responsibility
+
+Bridges the SQL test parser and pytest. Generates one parametrized pytest test item per
+`SqlTestCase` and executes it against the live database.
+
+### Discovery (collection time)
+
+```python
+_TESTCASES_DIR = os.path.join(os.path.dirname(__file__), "sql", "testcases")
+_ALL_CASES: list[SqlTestCase] = discover_sql_test_cases(_TESTCASES_DIR)
+```
+
+Discovery runs once at **pytest collection time** — before any test executes and before
+any database connection is opened. All `*.sql` files in `tests/sql/testcases/` are parsed
+in alphabetical filename order.
+
+### Parametrization
+
+```python
+@pytest.mark.parametrize(
+    "sql_test_case",
+    _ALL_CASES,
+    ids=[tc.full_id for tc in _ALL_CASES],
+)
+def test_sql_case(db_conn, sql_test_case: SqlTestCase) -> None:
+    ...
+```
+
+Each `SqlTestCase` becomes one parametrized variant of `test_sql_case`. The `ids=` list
+maps each variant to its human-readable `full_id` string so pytest output shows meaningful
+test names.
+
+### Execution flow (per test)
+
+```
+clean_tables fixture  →  DELETE all rows from all tables
+
+test_sql_case()
+    │
+    ├── _run_body(cursor, tc)
+    │       Split body_sql on GO separators
+    │       For each batch:
+    │           Prepend SET NOCOUNT ON
+    │           cursor.execute(batch)
+    │           Drain any open result sets (cursor.nextset loop)
+    │       On exception → pytest.fail() immediately
+    │
+    └── _run_assertions(cursor, tc)
+            For each SqlAssertion:
+                cursor.execute(assertion.sql)
+                row = cursor.fetchone()
+                if row is None   → failure: "returned no rows"
+                if row[0] != 1   → failure: "got <value>, expected 1"
+            Returns list of failure strings
+
+    if failures:
+        pytest.fail(combined message, pytrace=False)
+```
+
+### `_run_body` — body execution detail
+
+```python
+def _run_body(cursor, tc: SqlTestCase) -> None:
+    batches = re.split(r"^\s*GO\s*$", tc.body_sql, flags=re.MULTILINE | re.IGNORECASE)
+    for batch in batches:
+        sql = "SET NOCOUNT ON;\n" + batch
+        cursor.execute(sql)
+        while cursor.nextset():   # drain all result sets
+            pass
+```
+
+**Why `SET NOCOUNT ON`:** Stored procedures and DML statements send "rows affected"
+messages as implicit result sets in pyodbc. Without `NOCOUNT ON`, these open result sets
+can interfere with subsequent `fetchone()` calls in the assertion phase.
+
+**Why `cursor.nextset()`:** If the body calls a stored procedure that returns result sets
+(or intermediate `SELECT` outputs), all must be consumed before the next `cursor.execute`
+or pyodbc raises `ProgrammingError: Previous SQL was not a query`.
+
+### `_run_assertions` — assertion execution detail
+
+```python
+def _run_assertions(cursor, tc: SqlTestCase) -> list[str]:
+    failures = []
+    for idx, assertion in enumerate(tc.assertions, start=1):
+        cursor.execute(assertion.sql)
+        row = cursor.fetchone()
+        if row is None:
+            failures.append(f"Assertion {idx} '...' returned no rows")
+        elif row[0] != 1:
+            failures.append(f"Assertion {idx} '...' FAILED (got {row[0]!r}, expected 1)")
+    return failures
+```
+
+All assertions run even if one fails — the complete list of failures is collected and
+reported together. This gives the test author full visibility into how many assertions
+failed in a single run.
+
+---
+
+## 7. Stored Procedures Under Test
+
+### Database tables
+
+| Table | Role |
+|-------|------|
+| `dbo.STAGING` | Parent table — auto-ID, required for FK integrity |
+| `dbo.STAGING_FOLDERS` | Incoming raw data; `Is_Processed = 'N'` for unprocessed rows |
+| `dbo.TARGET_FOLDERS` | Final destination — only new/changed rows land here |
+| `dbo.HASH_REGISTRY` | SHA-256 fingerprint per unique row seen; keyed by `entity_name + row_hash` |
+| `dbo.SYS_DELTA_LOG` | Audit log — one row per SP execution with all counters and status |
+
+### `USP_DELTA_FOLDERS` — execution phases
+
+| Phase | Code section | What happens |
+|-------|-------------|--------------|
+| 1 | Open audit log | `INSERT INTO SYS_DELTA_LOG … status='RUNNING'`; captures `log_id = SCOPE_IDENTITY()` |
+| 2 | Acquire lock | `sp_getapplock 'USP_DELTA_FOLDERS', 'Exclusive'`; raises error if lock unavailable within 30 s |
+| 3 | Build `#staging_hash` | Computes `SHA2_256(CONCAT_WS('\|', ISNULL(field, ''), …))` for each unprocessed row; assigns `ROW_NUMBER()` within each hash group |
+| 4 | Count input | `input_row_count = COUNT(*)`; `rows_deduped = SUM(CASE WHEN rn > 1 THEN 1 ELSE 0 END)` |
+| 5 | Early exit | If `input_row_count = 0`: commit, update log to `SUCCESS` with all zeros, return |
+| 6 | Mark unchanged | `UPDATE HASH_REGISTRY SET updated_datetime = @current_timestamp` for hashes that already exist (`rn = 1` only) |
+| 7 | Insert new hashes | `INSERT INTO HASH_REGISTRY` for hashes not already present (`rn = 1` only) |
+| 8 | Insert target rows | `INSERT INTO TARGET_FOLDERS` for rows whose hash was just inserted (`system_datetime < @current_timestamp` filter distinguishes new from pre-existing) |
+| 9 | Retire stale hashes | `DELETE FROM HASH_REGISTRY WHERE updated_datetime < @current_timestamp` removes hashes not seen in this batch |
+| 10 | Mark processed | `UPDATE STAGING_FOLDERS SET Is_Processed = 'Y'` for all rows in `#staging_hash` (new, unchanged, and deduped) |
+| 11 | Commit + log | Commit transaction; update `SYS_DELTA_LOG` with final counters and `status='SUCCESS'` |
+| CATCH | Error path | Rollback transaction; update `SYS_DELTA_LOG` with `status='FAILED'` + `error_message` |
+
+### `USP_DELTA_MASTER` — behaviour
+
+A pure orchestrator. Calls approximately 40 entity-level delta procedures in sequence.
+Each call is individually wrapped in `BEGIN TRY … END CATCH` so a failure in one
+sub-procedure is swallowed and execution continues to the next.
+
+The master does **not** create its own `SYS_DELTA_LOG` entry — each sub-SP manages
+its own audit log row.
+
+---
+
+## 8. Test Case Reference — USP_DELTA_FOLDERS
+
+All tests are in `tests/sql/testcases/test_usp_delta_folders.sql`.  
+All tables are wiped before each test by the `clean_tables` fixture.
+
+---
+
+### TC01 — Empty staging table logs success
+
+**Description:** With no unprocessed rows the SP exits early and logs `SUCCESS` with all counters zero.
+
+**Setup:** None — staging is empty.
+
+**Assertions (7):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | A log entry is created | `COUNT(*) > 0` in `SYS_DELTA_LOG` |
+| 2 | status is SUCCESS | Latest log row `status = 'SUCCESS'` |
+| 3 | input_row_count is 0 | Latest log row `input_row_count = 0` |
+| 4 | rows_upserted is 0 | Latest log row `rows_upserted = 0` |
+| 5 | rows_unchanged is 0 | Latest log row `rows_unchanged = 0` |
+| 6 | rows_deduped is 0 | Latest log row `rows_deduped = 0` |
+| 7 | rows_retired is 0 | Latest log row `rows_retired = 0` |
+
+**Why it matters:** Verifies the early-exit path is reachable and produces a valid log entry.
+
+---
+
+### TC02 — Single new row inserted to target
+
+**Description:** One new staging row is inserted into `TARGET_FOLDERS` and `HASH_REGISTRY`.
+
+**Setup:** 1 row in `STAGING_FOLDERS` with `Is_Processed = 'N'`.
+
+**Assertions (5):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | TARGET_FOLDERS has 1 row | `COUNT(*) = 1` |
+| 2 | HASH_REGISTRY has 1 row | `COUNT(*) = 1` |
+| 3 | status is SUCCESS | `status = 'SUCCESS'` |
+| 4 | input_row_count is 1 | `input_row_count = 1` |
+| 5 | rows_upserted is 1 | `rows_upserted = 1` |
+
+**Why it matters:** Core happy path — confirms a single new row is processed end-to-end.
+
+---
+
+### TC03 — Staging row marked as processed after SP run
+
+**Description:** After a successful run all staging rows have `Is_Processed` flipped to `'Y'`.
+
+**Setup:** 2 distinct rows in `STAGING_FOLDERS` with `Is_Processed = 'N'`.
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | Both staging rows are now Is_Processed = Y | `COUNT(*) = 2` WHERE `Is_Processed = 'Y'` |
+| 2 | No unprocessed staging rows remain | `COUNT(*) = 0` WHERE `Is_Processed = 'N'` |
+
+**Why it matters:** Confirms that the final `UPDATE STAGING_FOLDERS` step works correctly.
+
+---
+
+### TC04 — Duplicate staging rows are deduplicated
+
+**Description:** Three identical rows produce one TARGET insert and `rows_deduped = 2`.
+
+**Setup:** 3 rows in `STAGING_FOLDERS` all with the same field values (same hash), `Is_Processed = 'N'`.
+
+**Assertions (5):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | Only 1 row inserted into TARGET_FOLDERS | `COUNT(*) = 1` |
+| 2 | HASH_REGISTRY has exactly 1 row | `COUNT(*) = 1` |
+| 3 | input_row_count is 3 | `input_row_count = 3` |
+| 4 | rows_deduped is 2 | `rows_deduped = 2` |
+| 5 | rows_upserted is 1 | `rows_upserted = 1` |
+
+**Why it matters:** Validates the `ROW_NUMBER() OVER (PARTITION BY row_hash)` deduplication logic.
+
+---
+
+### TC05 — Unchanged row with pre-existing hash is not reinserted
+
+**Description:** A row whose hash already exists in `HASH_REGISTRY` produces `rows_unchanged = 1` and no new TARGET row.
+
+**Setup:**
+- 1 staging row.
+- Matching hash manually pre-inserted into `HASH_REGISTRY` with `updated_datetime = NOW - 60s`.
+
+The hash is computed with the same formula as the SP:
+```sql
+HASHBYTES('SHA2_256', CONVERT(VARBINARY(8000),
+    CONCAT_WS('|', '', 'KNOWN-001', 'ACTIVE', 'TYPE-A', 'Test Folder', 'ENTITY-001')))
+```
+
+**Assertions (4):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | TARGET_FOLDERS is empty | `COUNT(*) = 0` |
+| 2 | HASH_REGISTRY still has exactly 1 row | `COUNT(*) = 1` |
+| 3 | rows_unchanged is 1 | `rows_unchanged = 1` |
+| 4 | rows_upserted is 0 | `rows_upserted = 0` |
+
+**Why it matters:** Verifies the change-detection mechanism — unchanged data is not duplicated in the target.
+
+---
+
+### TC06 — Old hashes not in current batch are retired
+
+**Description:** A hash from a prior run that is absent from this batch is deleted; `rows_retired = 1`.
+
+**Setup:**
+- Stale hash pre-inserted in `HASH_REGISTRY` with a 32-byte zero value and `updated_datetime = NOW - 120s`.
+- New staging row with a different hash.
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | HASH_REGISTRY has exactly 1 row | `COUNT(*) = 1` (stale deleted, new added) |
+| 2 | rows_retired is 1 | `rows_retired = 1` |
+
+**Why it matters:** Validates the `DELETE FROM HASH_REGISTRY WHERE updated_datetime < @current_timestamp` retirement step.
+
+---
+
+### TC07 — All metrics captured correctly in a mixed multi-row batch
+
+**Description:** A batch containing existing, new, and duplicate rows results in all five counters being exactly correct.
+
+**Setup:**
+- Pre-existing hash for `EXIST-001` (unchanged row).
+- 3 staging rows: `EXIST-001` (unchanged), `NEW-001` (new), `NEW-002` (new), and a duplicate of `NEW-001` (deduped).
+
+**Expected counters:** `input_row_count=4`, `rows_unchanged=1`, `rows_upserted=2`, `rows_deduped=1`, `rows_retired=0`.
+
+**Assertions (6):** status + all five counters.
+
+**Why it matters:** The omnibus test — all counters must be simultaneously correct on a realistic mixed batch.
+
+---
+
+### TC08 — Already-processed rows are ignored by the SP
+
+**Description:** Rows with `Is_Processed = 'Y'` are not counted; SP logs `input_row_count = 0`.
+
+**Setup:** 2 staging rows both with `Is_Processed = 'Y'`.
+
+**Assertions (3):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | status is SUCCESS | `status = 'SUCCESS'` |
+| 2 | input_row_count is 0 | `input_row_count = 0` |
+| 3 | TARGET_FOLDERS remains empty | `COUNT(*) = 0` |
+
+**Why it matters:** Confirms the `WHERE Is_Processed = 'N'` filter works and already-completed rows are idempotent.
+
+---
+
+### TC09 — Mixed batch with new and unchanged rows
+
+**Description:** 2 new rows + 1 pre-existing hash → `rows_upserted = 2`, `rows_unchanged = 1`.
+
+**Setup:**
+- Pre-existing hash for `MIX-KNOWN`.
+- 3 staging rows: `MIX-KNOWN` (unchanged), `MIX-NEW-1` and `MIX-NEW-2` (both new).
+
+**Assertions (4):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | TARGET_FOLDERS has 2 rows | `COUNT(*) = 2` |
+| 2 | rows_upserted is 2 | `rows_upserted = 2` |
+| 3 | rows_unchanged is 1 | `rows_unchanged = 1` |
+| 4 | input_row_count is 3 | `input_row_count = 3` |
+
+**Why it matters:** Tests the interaction of the unchanged-update and new-insert paths in the same batch.
+
+---
+
+### TC10 — Log entry always records the correct entity name
+
+**Description:** `SYS_DELTA_LOG` rows must carry `entity_name = 'FOLDERS'`.
+
+**Setup:** None — empty staging.
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | entity_name in latest log entry is FOLDERS | `entity_name = 'FOLDERS'` |
+| 2 | At least one log entry exists | `COUNT(*) >= 1` |
+
+**Why it matters:** Guards against a future refactor accidentally changing the entity name constant.
+
+---
+
+### TC11 — Cross-entity hashes in HASH_REGISTRY are not retired
+
+**Description:** Hashes belonging to other entity names (e.g. `ADDRESSES`) must survive a FOLDERS run untouched.
+
+**Setup:**
+- `ADDRESSES` hash pre-inserted with `updated_datetime = NOW - 120s`.
+- 1 new `FOLDERS` staging row.
+
+**Assertions (3):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | ADDRESSES hash still present | `COUNT(*) = 1` WHERE `entity_name = 'ADDRESSES'` |
+| 2 | FOLDERS hash was added | `COUNT(*) = 1` WHERE `entity_name = 'FOLDERS'` |
+| 3 | HASH_REGISTRY total is 2 rows | `COUNT(*) = 2` |
+
+**Why it matters:** The retirement `DELETE` filters on `entity_name = @entity_name`. This test
+proves that filter is applied, so a FOLDERS run cannot accidentally wipe another entity's hash state.
+
+---
+
+### TC12 — Unchanged staging rows are still marked `Is_Processed = 'Y'`
+
+**Description:** A staging row whose hash already exists in the registry must still be
+flipped to `Is_Processed = 'Y'` after the SP run — it should not be left as `'N'`.
+
+**Setup:**
+- 1 staging row with `Is_Processed = 'N'`.
+- Matching hash pre-inserted into `HASH_REGISTRY`.
+
+**Assertions (1):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | The unchanged staging row is now Is_Processed = Y | `Is_Processed = 'Y'` for the row |
+
+**Why it matters:** TC05 only verifies TARGET and HASH_REGISTRY behaviour; it never checks
+whether the staging row itself was marked processed. A row left as `'N'` would be
+reprocessed on every subsequent SP run.
+
+---
+
+### TC13 — Deduped staging rows are still marked `Is_Processed = 'Y'`
+
+**Description:** Duplicate staging rows (`rn > 1`) must also be flipped to `Is_Processed = 'Y'`,
+not abandoned with `Is_Processed = 'N'`.
+
+**Setup:** 2 identical staging rows (`Is_Processed = 'N'`).
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | Both rows (including the deduped one) are Is_Processed = Y | `COUNT(*) = 2` WHERE `Is_Processed = 'Y'` |
+| 2 | No unprocessed rows remain | `COUNT(*) = 0` WHERE `Is_Processed = 'N'` |
+
+**Why it matters:** The final `UPDATE` joins on `staging_row_id` from `#staging_hash`, which includes
+all rows (rn=1 and rn>1). This test confirms `rn > 1` rows are not silently left unprocessed.
+
+---
+
+### TC14 — Duplicate rows matching an existing hash: `rows_unchanged=1`, `rows_deduped=1`
+
+**Description:** When 2 identical staging rows arrive and the matching hash already exists
+in the registry, `rn=1` is "unchanged" and `rn=2` is "deduped".
+
+**Setup:**
+- Matching hash pre-inserted into `HASH_REGISTRY`.
+- 2 identical staging rows.
+
+**Assertions (4):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | TARGET_FOLDERS is empty | `COUNT(*) = 0` |
+| 2 | rows_unchanged is 1 | `rows_unchanged = 1` |
+| 3 | rows_deduped is 1 | `rows_deduped = 1` |
+| 4 | rows_upserted is 0 | `rows_upserted = 0` |
+
+**Why it matters:** Tests a counter interaction not covered by TC04 (dup+new) or TC05
+(dup with existing): the combination of `rows_unchanged` and `rows_deduped` together.
+
+---
+
+### TC15 — Multiple stale hashes are all retired in one batch
+
+**Description:** Two pre-existing hashes absent from the current batch must both be deleted; `rows_retired = 2`.
+
+**Setup:**
+- 2 stale hashes in `HASH_REGISTRY` (different values, `updated_datetime = NOW - 120s`).
+- 1 new staging row with a different hash.
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | HASH_REGISTRY has exactly 1 row | `COUNT(*) = 1` |
+| 2 | rows_retired is 2 | `rows_retired = 2` |
+
+**Why it matters:** TC06 only seeds 1 stale hash. This test confirms the `DELETE` is not
+scoped to a single row and retires all stale hashes in one statement.
+
+---
+
+### TC16 — Sequential full-cycle: second run retires first run hashes
+
+**Description:** Run 1 inserts rows A & B. Run 2 with row C: A & B hashes are retired, C is inserted.
+
+**Setup:**
+- Run 1: Insert staging rows A (`SEQ-A`) and B (`SEQ-B`), call SP. Both land in TARGET.
+- Run 2: Insert staging row C (`SEQ-C`) only, call SP again.
+
+**Assertions (4):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | HASH_REGISTRY has exactly 1 row after run 2 | `COUNT(*) = 1` |
+| 2 | rows_retired is 2 in run 2 | Latest log `rows_retired = 2` |
+| 3 | rows_upserted is 1 in run 2 | Latest log `rows_upserted = 1` |
+| 4 | TARGET_FOLDERS has 3 total rows | `COUNT(*) = 3` (A + B from run 1, C from run 2) |
+
+**Why it matters:** This is the core delta contract: successive batches with different data should
+result in only the latest batch's hashes surviving. No other test runs the SP twice.
+
+---
+
+### TC17 — `NULL` and empty string produce the same hash
+
+**Description:** `ISNULL(field, '')` maps `NULL` to `''` before hashing, so a row with `NULL`
+in a field and a row with `''` in the same field are treated as duplicates.
+
+**Setup:** 2 staging rows identical except `folderIfUnmodifiedSince` is `NULL` in one and `''` in the other.
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | rows_deduped is 1 | `rows_deduped = 1` |
+| 2 | Only 1 row inserted into TARGET_FOLDERS | `COUNT(*) = 1` |
+
+**Why it matters:** Documents an implicit behaviour of `CONCAT_WS` + `ISNULL` that data producers
+must be aware of. An empty string and a `NULL` in any business field are indistinguishable
+after hashing.
+
+---
+
+### TC18 — Mixed processed/unprocessed rows: only unprocessed rows counted
+
+**Description:** When the staging table contains both `'Y'` and `'N'` rows, only `'N'` rows
+are read by the SP; `input_row_count` must reflect only those.
+
+**Setup:** 2 rows with `Is_Processed = 'Y'` and 1 row with `Is_Processed = 'N'`.
+
+**Assertions (3):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | input_row_count is 1 | `input_row_count = 1` |
+| 2 | TARGET_FOLDERS has exactly 1 row | `COUNT(*) = 1` |
+| 3 | Pre-existing processed rows remain Y | `COUNT(*) = 2` WHERE `Is_Processed = 'Y'` AND `folderFolderID IN ('MIX-DONE-1','MIX-DONE-2')` |
+
+**Why it matters:** TC08 tests an all-`'Y'` table; TC03 tests an all-`'N'` table. Neither
+tests both states coexisting, which is the common real-world scenario after partial batch runs.
+
+---
+
+### TC19 — `duration_seconds` is populated in the log entry
+
+**Description:** After any SP execution, `duration_seconds` in `SYS_DELTA_LOG` must be
+non-`NULL` and `>= 0`.
+
+**Setup:** None — empty staging (exercises the early-exit path).
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | duration_seconds is not NULL | `duration_seconds IS NOT NULL` |
+| 2 | duration_seconds is >= 0 | `duration_seconds >= 0` |
+
+**Why it matters:** No other test verifies this column is populated. If the `DATEDIFF` call
+were accidentally removed from the early-exit path, `duration_seconds` would remain `NULL`
+silently.
+
+---
+
+### TC20 — Row with all nullable fields `NULL` is processed without error
+
+**Description:** A staging row where all six business fields are `NULL` must be hashed
+(producing `SHA2_256` of `'|||||'`) and inserted into `TARGET_FOLDERS` without error.
+
+**Setup:** 1 staging row with `folderIfUnmodifiedSince`, `folderFolderID`, `folderStateCode`,
+`folderTypeCode`, `folderDescription`, and `folderOwnerEntityId` all set to `NULL`.
+
+**Assertions (3):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | status is SUCCESS | `status = 'SUCCESS'` |
+| 2 | 1 row inserted into TARGET_FOLDERS | `COUNT(*) = 1` |
+| 3 | 1 hash registered for FOLDERS | `COUNT(*) = 1` WHERE `entity_name = 'FOLDERS'` |
+
+**Why it matters:** Edge case — confirms `ISNULL` and `CONCAT_WS` handle a fully-null row
+gracefully and produce a stable, insertable hash.
+
+---
+
+### TC21 — Idempotent rerun produces `input_row_count = 0`
+
+**Description:** Running the SP twice with the same staging data results in `input_row_count = 0`
+on the second run because all rows were marked `Is_Processed = 'Y'` by the first run.
+
+**Setup:**
+- Insert 1 staging row, call SP (run 1).
+- Call SP again immediately (run 2) — no new staging data.
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | input_row_count is 0 on run 2 | Latest log `input_row_count = 0` |
+| 2 | status is SUCCESS on run 2 | Latest log `status = 'SUCCESS'` |
+
+**Why it matters:** Confirms the SP is safe to call multiple times in the same window without
+reprocessing already-completed data.
+
+---
+
+## 9. Test Case Reference — USP_DELTA_MASTER
+
+All tests are in `tests/sql/testcases/test_usp_delta_master.sql`.
+
+---
+
+### TC01 — Master procedure executes without error
+
+**Description:** `USP_DELTA_MASTER` completes successfully with no unhandled exception.
+
+**Setup:** None — empty staging.
+
+**Assertions (1):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | USP_DELTA_FOLDERS logged at least one entry | `COUNT(*) >= 1` WHERE `entity_name = 'FOLDERS'` |
+
+**Why it matters:** Baseline smoke test — confirms the master can be called at all.
+
+---
+
+### TC02 — Sub-procedure failures do not stop the master
+
+**Description:** Non-existent sub-procedures (all 38 entities other than FOLDERS, which
+do not exist in the test database) are silently swallowed via `TRY/CATCH`; `USP_DELTA_FOLDERS`
+still runs and logs success.
+
+**Setup:** None — empty staging; only `USP_DELTA_FOLDERS` is created in the test DB.
+
+**Assertions (1):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | USP_DELTA_FOLDERS logged a SUCCESS entry | `COUNT(*) >= 1` WHERE `entity_name = 'FOLDERS'` AND `status = 'SUCCESS'` |
+
+**Why it matters:** Confirms the `BEGIN TRY … END CATCH` wrappers around each sub-SP call work
+correctly. If a missing procedure caused the master to abort, `USP_DELTA_FOLDERS` would never run.
+
+---
+
+### TC03 — Master delegates to `USP_DELTA_FOLDERS` end-to-end
+
+**Description:** When `STAGING_FOLDERS` has data, calling `USP_DELTA_MASTER` processes it
+through `USP_DELTA_FOLDERS`.
+
+**Setup:** 2 staging rows (`MASTER-F001`, `MASTER-F002`).
+
+**Assertions (3):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | Both staging rows were processed into TARGET_FOLDERS | `COUNT(*) = 2` |
+| 2 | USP_DELTA_FOLDERS logged SUCCESS | Latest FOLDERS log `status = 'SUCCESS'` |
+| 3 | rows_upserted is 2 | Latest FOLDERS log `rows_upserted = 2` |
+
+**Why it matters:** End-to-end integration test through the master — confirms the delegation
+chain works, not just that the master exits without error.
+
+---
+
+### TC04 — Master does not create its own `SYS_DELTA_LOG` entry
+
+**Description:** `USP_DELTA_MASTER` is a pure orchestrator with no `INSERT INTO SYS_DELTA_LOG`
+of its own. After calling it, no row with `entity_name = 'MASTER'` should exist.
+
+**Setup:** None — empty staging.
+
+**Assertions (2):**
+
+| # | Description | Expected |
+|---|-------------|----------|
+| 1 | No log entry with entity_name = MASTER | `COUNT(*) = 0` WHERE `entity_name = 'MASTER'` |
+| 2 | FOLDERS sub-SP was invoked and logged | `COUNT(*) >= 1` WHERE `entity_name = 'FOLDERS'` |
+
+**Why it matters:** If the master ever starts creating its own log entries (e.g. after a
+refactor), monitoring dashboards expecting only sub-SP entries would show unexpected rows.
+
+---
+
+## 10. How to Add a New Test Case
+
+No Python changes are needed. Only SQL is required.
+
+### Step 1 — Open (or create) a `.sql` file
+
+```
+tests/sql/testcases/test_usp_delta_folders.sql   ← add FOLDERS tests here
+tests/sql/testcases/test_usp_delta_master.sql    ← add MASTER tests here
+tests/sql/testcases/test_usp_my_new_sp.sql       ← or create a new file
+```
+
+### Step 2 — Write the test block
+
+```sql
+-- @@TEST: TC22 - My new scenario name
+-- @@DESCRIPTION: One sentence explaining what this test verifies
+
+-- Setup: any INSERT / DECLARE statements needed
+DECLARE @staging_id BIGINT;
+INSERT INTO dbo.STAGING DEFAULT VALUES;
+SET @staging_id = SCOPE_IDENTITY();
+
+INSERT INTO dbo.STAGING_FOLDERS
+    (folderIfUnmodifiedSince, folderFolderID, folderStateCode,
+     folderTypeCode, folderDescription, folderOwnerEntityId, staging_id, Is_Processed)
+VALUES (NULL, 'MY-FOLDER', 'ACTIVE', 'TYPE-A', 'My Description', 'ENTITY-001', @staging_id, 'N');
+
+-- Call the stored procedure under test
+EXEC dbo.USP_DELTA_FOLDERS;
+
+-- @@ASSERT: Description of the first check
+SELECT CASE WHEN COUNT(*) = 1 THEN 1 ELSE 0 END
+FROM dbo.TARGET_FOLDERS;
+
+-- @@ASSERT: Description of the second check
+SELECT CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG
+ORDER BY log_id DESC OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+
+-- @@END_TEST
+```
+
+### Step 3 — Run pytest
+
+```bash
+pytest tests/ -v
+```
+
+Your new test is discovered and executed automatically.
+
+---
+
+## 11. Assertion Contract
+
+Every `@@ASSERT` SELECT must conform to the following contract:
+
+| Return value | Meaning |
+|-------------|---------|
+| `1` (integer) | Assertion **passes** |
+| `0` | Assertion **fails** |
+| `NULL` | Assertion **fails** — treated as non-1 value |
+| No rows returned | Assertion **fails** — "returned no rows" error |
+| Multiple columns | Only the **first column** of the first row is evaluated |
+| Multiple rows | Only the **first row** is evaluated |
+
+**Pattern for count checks:**
+```sql
+SELECT CASE WHEN COUNT(*) = 3 THEN 1 ELSE 0 END
+FROM dbo.TARGET_FOLDERS;
+```
+
+**Pattern for value checks:**
+```sql
+SELECT CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG
+ORDER BY log_id DESC OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+```
+
+**Pattern for NULL checks:**
+```sql
+SELECT CASE WHEN duration_seconds IS NOT NULL THEN 1 ELSE 0 END
+FROM dbo.SYS_DELTA_LOG
+ORDER BY log_id DESC OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+```
+
+---
+
+## 12. Failure Message Format
+
+When one or more assertions fail, pytest reports a combined message:
+
+```
+FAILED tests/test_sql_runner.py::test_sql_case[test_usp_delta_folders__TC07_...]
+AssertionError: Test 'TC07 - All metrics captured ...' – 2 assertion(s) failed:
+  [1] Assertion 4 'rows_deduped is 1' FAILED (got 0, expected 1).
+      SQL: SELECT CASE WHEN rows_deduped = 1 THEN 1 ELSE 0 END
+           FROM dbo.SYS_DELTA_LOG ORDER BY log_id DESC OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+  [2] Assertion 5 'rows_upserted is 2' FAILED (got 3, expected 1).
+      SQL: SELECT CASE WHEN rows_upserted = 2 THEN 1 ELSE 0 END
+           FROM dbo.SYS_DELTA_LOG ORDER BY log_id DESC OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY;
+```
+
+All assertions in a test case run even if one fails — you always see the full picture
+in a single run.
+
+If the body SQL itself raises an exception (e.g. a syntax error or a constraint violation),
+the test fails immediately with:
+
+```
+FAILED tests/test_sql_runner.py::test_sql_case[...]
+AssertionError: Body SQL execution failed in 'TC07 - ...':
+  INSERT INTO dbo.STAGING_FOLDERS ...
+Error: ('23000', '[23000] ...')
+```
+
+---
+
+## 13. GitLab CI Pipeline
+
+**File:** `.gitlab-ci.yml`
+
+```yaml
+stages:
+  - test
+
+sql-unit-tests:
+  stage: test
+  image: python:3.11-slim
+  services:
+    - name: mcr.microsoft.com/mssql/server:2022-latest
+      alias: sqlserver
+      variables:
+        ACCEPT_EULA: "Y"
+        MSSQL_SA_PASSWORD: "Str0ngPass!2024"
+  before_script:
+    - pip install -q -r requirements.txt
+    - python tests/setup_db.py
+  script:
+    - pytest tests/ --tb=short --junitxml=test-results.xml --html=test-report.html --self-contained-html
+  artifacts:
+    when: always
+    reports:
+      junit: test-results.xml
+    paths:
+      - test-results.xml
+      - test-report.html
+    expire_in: 30 days
+```
+
+### Pipeline stages
+
+| Stage | What happens |
+|-------|-------------|
+| SQL Server starts | Docker service `mcr.microsoft.com/mssql/server:2022-latest` spins up alongside the Python runner |
+| ODBC driver installed | `apt-get install msodbcsql18` in the runner container |
+| Python deps installed | `pip install -r requirements.txt` — installs `pyodbc`, `pytest`, `pytest-html` |
+| DB bootstrapped | `python tests/setup_db.py` — polls for SQL Server readiness, creates `TestDB`, runs DDL |
+| Tests executed | `pytest tests/ --junitxml=... --html=...` — runs all 25 SQL-driven test cases |
+| Artefacts published | JUnit XML (test tab in MR) + HTML report (downloadable for 30 days) |
+
+### Viewing results
+
+- **GitLab MR → Tests tab** — pass/fail count per test case
+- **GitLab MR → Artefacts → `test-report.html`** — full HTML report with assertion-level detail
+
+---
+
+## 14. Environment Variables Reference
+
+All connection settings can be overridden at runtime. Defaults match the Docker Compose setup.
+
+| Variable | Default | Used by |
+|----------|---------|---------|
+| `DB_HOST` | `localhost` | `setup_db.py`, `conftest.py` |
+| `DB_PORT` | `1433` | `setup_db.py`, `conftest.py` |
+| `DB_NAME` | `TestDB` | `setup_db.py`, `conftest.py` |
+| `DB_USER` | `sa` | `setup_db.py`, `conftest.py` |
+| `DB_PASSWORD` | `Str0ngPass!2024` | `setup_db.py`, `conftest.py` |
+
+**Override example (CI / custom SQL Server):**
+```bash
+DB_HOST=my-sql-server \
+DB_PORT=1433 \
+DB_NAME=MyTestDB \
+DB_USER=sa \
+DB_PASSWORD=MySecret! \
+  python tests/setup_db.py && pytest tests/ -v
+```
