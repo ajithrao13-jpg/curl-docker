@@ -1,0 +1,29 @@
+Selected Approach
+
+Since the current scope is not to mask or obfuscate PII across all CL7 lower-environment tables, and the main requirement is to prevent PII from being transmitted to Collate/Broadridge, the selected approach is to mask PII values before DataConnect sends data through API requests or files.
+
+Blob files → CL7 processing → Dynamic Data Masking on target tables → Collate API/files
+
+Based on the team discussion, the selected approach is to apply Dynamic Data Masking (DDM) on the PII columns in the CL7 target tables.
+
+DataConnect reads records from the target tables to build Collate API requests and output files. The managed identity used by DataConnect will not be granted UNMASK permission. Because of this, when DataConnect queries the target tables, it will receive the masked values instead of the actual PII values.
+
+Example:
+
+Target table actual value: aadi@mtb.com
+DataConnect sees: axxx@xxxx.com
+Collate API/file receives: axxx@xxxx.com
+
+This prevents actual PII values from being transmitted from CL7 to Collate/Broadridge through API requests or files.
+
+Items to Confirm
+
+* Confirm whether masked values will impact business testing.
+* Confirm whether Collate API and file validations can accept masked values such as XXXX, axxx@xxxx.com, or partially masked values.
+* Confirm the complete list of PII fields in target tables that require masking.
+* Confirm that the DataConnect managed identity does not have UNMASK permission.
+* Confirm whether any downstream process expects real or format-preserved values.
+
+Important Note
+
+This approach protects the data transmitted from CL7 to Collate/Broadridge, but it does not permanently replace the stored values in CL7 tables. Real PII may still exist in raw, staging, target, and reporting tables unless separate masking/obfuscation controls are applied there.
