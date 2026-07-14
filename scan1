@@ -1,0 +1,29 @@
+CrowdStrikeApiClient
+
+Since CL7 is Spring Boot: use WebClient over RestTemplate. RestTemplate is legacy and being phased out anyway, and WebClient's non-blocking model plays nicer if you ever want to parallelize uploads across your 10 worker threads without each one blocking a thread on I/O.
+The multipart upload (file + scan=true/false) needs MultipartBodyBuilder — straightforward, but worth a wrapper method since you'll call it from both the initial upload and the "upload without scan, scan later" path.
+Keep this class dumb — pure HTTP wrapper, no retry/circuit-breaker logic embedded here. That belongs in CircuitBreakerManager wrapping calls to it, not baked into the client itself.
+
+TokenManager
+
+Real design question: how do 10 concurrent worker threads share one token without stampeding the token endpoint? Options: (a) synchronized/double-checked-locking around a cached token + expiry timestamp, or (b) a @Scheduled background refresh that runs independently of request threads. I'd lean toward (b) — refresh proactively at ~80% of TTL — since it decouples token refresh from request latency and avoids lock contention entirely.
+Worth checking whether token requests themselves count against your scan quota — if not, refresh liberally; if they do, that changes the refresh cadence calculus.
+
+FileScanService
+
+This is where the BENIGN incident should directly inform the implementation: the poll loop needs a hard cap on attempts/elapsed time regardless of what status comes back — not just "handle known statuses," but a circuit-breaker-style ceiling so an unrecognized status can never cause an infinite loop again. That's a second line of defense on top of VerdictHandler's allowlist.
+For concurrency: back this with a bounded ExecutorService (or Spring's @Async + a custom TaskExecutor bean) sized to max_workers=10, so batch throughput is explicit and testable rather than implicit.
+
+VerdictHandler
+
+Allowlist-based is the right call (fail-safe by default), but make the allowlist config-driven, not hardcoded — a properties file or DB table Ops can update without a redeploy. That's the actual fix for "CrowdStrike silently added BENIGN": next time it happens, someone updates a config value instead of shipping a hotfix.
+Also worth deciding: does an unrecognized verdict go to quarantine silently, or does it fire an alert immediately? I'd want the alert — otherwise files pile up in limbo with nobody noticing until BR complains files aren't arriving.
+
+CircuitBreakerManager
+
+Important distinction: a 429 (quota exhausted) and a 500 (transient CrowdStrike issue) are not the same kind of failure and shouldn't be handled identically. A 500 is worth Resilience4j's normal retry/backoff; a 429 means "stop for the rest of the month" — retrying won't help. I'd define distinct exception types (QuotaExceededException vs CrowdStrikeApiException) so the breaker's recordExceptions/ignoreExceptions config can route them differently, with 429 immediately flipping QuotaMonitorService's suspend flag rather than going through normal recovery.
+
+QuotaMonitorService
+
+The hard question: does CrowdStrike expose any "remaining quota" query endpoint, or is a 429 your only ground-truth signal? Since the quota is pooled across IC4/SFR/CIN/CL7, your local counter only tracks your consumption — if another product burns the pool, you'll get a 429 with no local warning. Worth confirming with the CrowdStrike team whether such an endpoint exists; if not, your Elastic metric is really "our estimated share," not "true remaining quota," and the auto-suspend threshold needs to account for that uncertainty (e.g., suspend earlier than you'd otherwise want to).
+Also — "auto-suspends at threshold" needs a concrete mechanism: an AtomicBoolean or similar that FileScanService checks before every new submission, not just a metric/alert that a human has to act on.
