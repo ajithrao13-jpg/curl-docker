@@ -1,0 +1,215 @@
+CL7 CrowdStrike Quick Scan Pro Integration
+Overview
+
+CrowdStrike Quick Scan Pro is a REST API used to upload files for malware analysis and retrieve scan results asynchronously.
+
+The main CL7 use case is to scan files generated for outbound transmission before they are sent to the external vendor.
+
+Key details
+
+Item	Detail
+Call direction	Outbound
+Base URL	https://api.us-2.crowdstrike.com
+Authentication	OAuth 2.0 client credentials
+Maximum file size	256 MB
+Processing pattern	Upload → Poll → Verdict
+API permissions	Quick Scan Pro READ and WRITE
+Firewall/proxy requirements	TBD
+File retention in CrowdStrike	Uploaded samples expire after 90 days
+
+The official API specifies a maximum upload size of 256 MB, accepts the file as multipart form data, accepts file_name as a query parameter, and supports starting the scan during upload using scan=true.
+
+CL7 Scope
+
+DataConnect and DataBridge generate outbound files and place them in an outbound Azure Blob Storage container.
+
+The proposed integration scans these outbound files before transmission:
+
+DataConnect/DataBridge
+        ↓
+Outbound Blob Container
+        ↓
+CL7 File Scan Service
+        ↓
+CrowdStrike Quick Scan Pro
+        ↓
+Clean / Quarantine / Error
+        ↓
+Transmission Process
+        ↓
+Vendor Shared Drive or Approved Delivery Channel
+
+Only files with an approved clean verdict will be made available to the transmission process.
+
+Inbound file scanning is currently outside the primary use case and remains an open decision.
+
+Triggering the Scan
+
+Two approaches were evaluated:
+
+Recommended: Blob file-arrival trigger
+
+A shared file-scanning service is triggered when a new file is created in the outbound container.
+
+This avoids implementing the same CrowdStrike logic separately in DataConnect and DataBridge.
+
+Alternative: Application-triggered scan
+
+DataConnect or DataBridge calls the scanning service immediately after creating the file.
+
+The selected approach must support idempotency so the same file is not scanned repeatedly.
+
+Authentication and Access
+Application authentication
+
+The CL7 service obtains a bearer token using:
+
+POST /oauth2/token
+
+The request uses the API client ID and client secret. The credentials must be retrieved from the approved secrets-management solution and must not be written to application logs.
+
+CrowdStrike access tokens are generated through /oauth2/token, using form-encoded credentials.
+
+API client permissions
+
+The API client requires:
+
+Quick Scan Pro: READ
+Quick Scan Pro: WRITE
+User access
+
+Any AD group created for Falcon console access is for human users only. It is separate from the API client used by the CL7 service.
+
+Environment credentials
+
+Confirm which credential model is required:
+
+Option 1: DEV/CERT client + separate PROD client
+Option 2: Separate DEV, CERT, and PROD clients
+
+Document only the model confirmed by the Endpoint Security team.
+
+Required API Endpoints
+Endpoint	Method	Purpose
+/oauth2/token	POST	Obtain bearer token
+/quickscanpro/entities/files/v1	POST	Upload a file and optionally start scanning
+/quickscanpro/entities/scans/v1	POST	Start scanning a previously uploaded file
+/quickscanpro/entities/scans/v1?ids=<scan_id>	GET	Retrieve a scan result
+/quickscanpro/queries/scans/v1?filter=<FQL>	GET	Query scan jobs, including by SHA256
+/quickscanpro/entities/files/v1?ids=<sha256>	DELETE	Delete a previously uploaded file
+/quickscanpro/entities/scans/v1?ids=<scan_id>	DELETE	Delete a scan result
+
+The official Quick Scan Pro collection currently contains upload, launch scan, retrieve result, query scans, delete file, and delete scan-result operations.
+
+Scanning Workflow
+Option A: Upload and scan immediately
+1. Read the file bytes from Azure Blob Storage.
+2. Upload the file with scan=true.
+3. Capture the returned scan identifier and SHA256.
+4. Poll the scan-result endpoint using the scan identifier.
+5. Continue until a terminal verdict is returned or the timeout is reached.
+6. Route the file based on the verdict.
+Option B: Upload first and scan later
+1. Upload the file with scan=false.
+2. Capture the returned SHA256.
+3. POST the SHA256 to /quickscanpro/entities/scans/v1.
+4. Capture the returned scan identifier.
+5. Poll the scan-result endpoint.
+6. Route the file based on the verdict.
+
+CL7 should use one approach consistently. For the current use case, scan=true provides the simpler workflow.
+
+Upload Request Example
+curl --request POST \
+  'https://api.us-2.crowdstrike.com/quickscanpro/entities/files/v1?file_name=myfile.csv' \
+  --header "Authorization: Bearer ${TOKEN}" \
+  --form 'file=@myfile.csv' \
+  --form 'scan=true'
+
+The file field contains the binary file content. The filename is passed through the file_name query parameter. Curl’s --form option generates a multipart/form-data request suitable for binary uploads.
+
+Poll request
+curl --request GET \
+  'https://api.us-2.crowdstrike.com/quickscanpro/entities/scans/v1?ids=<SCAN_ID>' \
+  --header "Authorization: Bearer ${TOKEN}"
+Verdict Handling
+
+Use an allowlist-based verdict policy.
+
+Result	CL7 action
+Confirmed clean verdict	Move or copy the file to the clean container
+Confirmed malicious verdict	Move the file to the quarantine/malicious container and alert support
+Scan still processing	Continue bounded polling
+Unknown status or verdict	Stop processing, quarantine the file, and alert support
+Timeout or API failure	Keep the file in pending/error and prevent transmission
+
+Do not implement recursive polling. Polling must use:
+
+Maximum attempts
+Maximum total duration
+Delay or exponential backoff
+Circuit breaker
+Retry only for approved transient errors
+
+No file should be transmitted when its verdict is unknown, incomplete, or unavailable.
+
+Quota Management
+
+The following are internal CrowdStrike constraints and should include links to the relevant incident or support documentation:
+
+Item	Detail
+Current quota	50,000 scans per month
+Reset	First day of every month
+Scope	Shared across all API clients using the product
+Per-key allocation	Not available
+Test environment	No separate CrowdStrike test quota
+Exceeded quota	Scanning stops and HTTP 429 may be returned
+
+Quota refers to scans, not the total number of token, polling, or query requests.
+
+CL7 should publish metrics for:
+
+Number of files scanned
+Estimated monthly quota usage
+Successful and failed scans
+Unknown verdicts
+HTTP 429 responses
+Average scan duration
+Files waiting in pending/error
+
+An alert threshold should be configured before the shared quota is exhausted.
+
+Proposed Component Design
+Component	Suggested class	Responsibility
+API client	CrowdStrikeApiClient	Wrapper around required Quick Scan Pro operations
+Token provider	CrowdStrikeTokenProvider	Obtain and cache OAuth tokens
+Scan orchestrator	FileScanService	Upload → poll → verdict workflow
+Verdict policy	VerdictHandler	Allowlist-based verdict classification
+File router	FileRoutingService	Move files to clean, quarantine, or error
+State repository	FileScanRepository	Store file, SHA256, scan ID, state, attempts and verdict
+Circuit breaker	CircuitBreakerManager	Protect calls during API outages
+Quota monitor	QuotaMonitorService	Track usage and publish alerts/metrics
+
+Persisting the SHA256 and scan ID will also help prevent duplicate scans after service restarts or repeated Blob events.
+
+Onboarding Process
+Submit an Endpoint Security Support Services GetIT consultation request for CrowdStrike.
+Endpoint Security creates the Falcon API client.
+Grant Quick Scan Pro READ and WRITE permissions.
+Provide the client ID, secret, and base URL through the approved secure process.
+Store credentials in CA PAM or the approved secrets-management platform.
+Complete outbound firewall, proxy, and API Gateway approvals.
+Test with non-sensitive files before enabling production processing.
+Open Decisions
+Are inbound files included in the malware-scanning requirement?
+Will scanning be triggered by Blob file arrival or directly by DataConnect/DataBridge?
+Is an M&T outbound proxy or authentication bypass required?
+Is API Gateway approval required for calls to api.us-2.crowdstrike.com?
+Which API-client separation is required across DEV, CERT, and PROD?
+What is the expected monthly file volume?
+What is the approved polling interval and timeout?
+What is the business process when CrowdStrike is unavailable?
+Can production files containing PII/PIT be uploaded to CrowdStrike?
+What is the approved transmission mechanism from CL7 to Collate?
+How should files larger than 256 MB be handled?
+What retention and deletion requirements apply to uploaded files and scan results?
