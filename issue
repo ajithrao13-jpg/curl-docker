@@ -1,18 +1,4 @@
-    # ---------------------------------------------------------------
-    # Schema verification: confirm all changesets actually applied
-    # ---------------------------------------------------------------
-    print("")
-    print("=" * 60)
-    print("SCHEMA VERIFICATION")
-    print("=" * 60)
-    cursor.execute("""
-        SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
-        FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE TABLE_SCHEMA = 'dbo'
-          AND TABLE_NAME IN ('STAGING', 'STAGING_FOLDERS')
-        ORDER BY TABLE_NAME, ORDINAL_POSITION
-    """)
-    for row in cursor.fetchall():
-        print(f"  {row.TABLE_NAME:20s} {row.COLUMN_NAME:30s} {row.DATA_TYPE}")
-    print("=" * 60)
-    print("")
+I have two questions about the CDR–ERM–CLN flow:
+
+1. We run the CDR delta to identify only new loans, retrieve their profile numbers and related data from ERM, and create the bulk file. This means the bulk file will contain data only for new loans. However, the Collate API can send both new and updated records, and updated records may belong to existing loans. Is this the expected behavior?
+2. When CLN is triggered, it ingests the complete CLN file from the raw tables and begins the transformations. Since CLN depends on ERM and every CLN record requires a corresponding profile number, how will we retrieve profile numbers for existing loans if the ERM raw tables contain data only for new loans? Is this a gap, or am I missing something in the process?
